@@ -79,21 +79,23 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'acildestek.wsgi.application'
-
+ALLOWED_HOSTS = ['https://acildestek.herokuapp.com']
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'AcilDestekDb',
-        'USER': 'postgres',
-        'PASSWORD': 'ozgur',
-        'HOST': 'localhost',
-        'PORT': '',
+        'NAME': 'd5td44hr7tpine',
+        'USER': 'adjobobhaszyrt',
+        'PASSWORD': '0d2b7ed50aa95f3d72f54974d1326c2a02ab235928ccc55326ed49ecd8d9b7ce',
+        'HOST': 'ec2-44-207-133-100.compute-1.amazonaws.com',
+        'PORT': '5432',
     }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
