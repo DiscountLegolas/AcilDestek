@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-6*d$vs*qt42k55(ug8xrvikj(y-r#&5ma)2wu*&f$cp+mkvffs
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['acildestek.herokuapp.com']
 
 AUTH_USER_MODEL = 'BaseUser.BaseUser'
 # Application definition
@@ -81,7 +81,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'acildestek.wsgi.application'
-ALLOWED_HOSTS = ['https://acildestek.herokuapp.com']
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
