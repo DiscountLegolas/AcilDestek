@@ -69,15 +69,9 @@ class OpeningHours(models.Model):
     is_closed=models.BooleanField(default=True)
     from_hour = models.TimeField(_('Opening'))
     to_hour = models.TimeField(_('Closing'))
-    is_closed=models.BooleanField(default=True)
 
-<<<<<<< HEAD
     def __str__(self):
         return _("%(company)s - %(weekday)s  %(from_hour)s - %(to_hour)s") % {
-=======
-    def str(self):
-        return _(" %(company)s - %(weekday)s  %(from_hour)s - %(to_hour)s") % {
->>>>>>> 00586e609e34c33e74f07fb0a99ad004ffe29811
             'company':self.company.companyname,
             'weekday': self.get_weekday_display(),
             'from_hour': self.from_hour,
