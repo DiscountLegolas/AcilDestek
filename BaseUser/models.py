@@ -88,6 +88,8 @@ class BaseUser(AbstractUser):
     is_expert = models.BooleanField(default=False)
     is_regular = models.BooleanField(default=False)
 
+    def __str__(self):
+        return self.email
     
     class Meta:
         verbose_name        = "BaseUser"

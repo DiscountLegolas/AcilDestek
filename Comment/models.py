@@ -13,6 +13,9 @@ class ExpertReview(models.Model):
     user = models.ForeignKey(PersonalAccount, on_delete=models.SET_NULL,null=True,verbose_name="Yorumu Atan Müşteri")
     createdDate = models.DateTimeField(default=datetime.now,verbose_name="Oluşturulma Tarihi")
     
+    def __str__(self):
+        return  self.text 
+    
     class Meta:
         constraints = [
             CheckConstraint(check=Q(rate__range=(0, 5)), name='valid_rate'),

@@ -2,6 +2,10 @@ from django.db import models
 
 class İl(models.Model):
     name=models.CharField(max_length=15)
+
+    def __str__(self):
+        return self.name
+
     class Meta:
         verbose_name        = "City"
         verbose_name_plural = "Cities"
@@ -10,6 +14,10 @@ class İl(models.Model):
 class İlçe(models.Model):
     name=models.CharField(max_length=15)
     il = models.ForeignKey(İl, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
+        
     class Meta:
         verbose_name        = "District"
         verbose_name_plural = "Districts"
