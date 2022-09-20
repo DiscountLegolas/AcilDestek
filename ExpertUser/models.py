@@ -62,8 +62,8 @@ class Expert(models.Model):
 class OpeningHours(models.Model):
 
     class Meta:
-        verbose_name = _('Çalışma Saatleri')  # plurale tantum
-        verbose_name_plural = _('Çalışma Saatleri')
+        verbose_name = _('Working time')  # plurale tantum
+        verbose_name_plural = _('Working times')
         ordering = [ 'weekday', 'from_hour']
 
     company = models.ForeignKey(Expert,on_delete=models.CASCADE, verbose_name=_('Company'))

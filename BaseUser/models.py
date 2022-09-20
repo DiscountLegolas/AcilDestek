@@ -89,7 +89,8 @@ class BaseUser(AbstractUser):
     is_regular = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.email
+        email =self.email
+        return str(email)
     
     class Meta:
         verbose_name        = "BaseUser"

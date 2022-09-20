@@ -14,6 +14,6 @@ class PersonalAccount(models.Model):
         return self.user
 
     class Meta:
-        verbose_name        = "Kişisel Kullanıcı"
-        verbose_name_plural = "Kişisel Kullanıcılar"
+        verbose_name        = "Custome"
+        verbose_name_plural = "Customers"
         db_table            = "PersonalUsers"
