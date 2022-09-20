@@ -17,6 +17,8 @@ Including another URLconf
 from rest_framework.exceptions import AuthenticationFailed
 from django.contrib import admin
 from django.urls import path,include
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import  get_user_model
@@ -56,12 +58,31 @@ class CustomJWTSerializer(TokenObtainPairSerializer):
                 'no_active_account',)
 
 
+
+schema_view = get_schema_view(
+   openapi.Info(
+      title="AcilDestek API",
+      default_version='v1',
+      description="Test description",
+      terms_of_service="https://www.google.com/policies/terms/",
+      contact=openapi.Contact(email="contact@snippets.local"),
+      license=openapi.License(name="BSD License"),
+   ),
+   public=True,
+   permission_classes=[permissions.AllowAny],
+)
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/user/', include("BaseUser.urls", namespace="baseuser"), name="url_user"),
-    path('api/personaluser/', include("PersonalUser.urls", namespace="personaluser"), name="url_personaluser"),
-    path('api/expert/', include("ExpertUser.urls", namespace="expertuser"), name="url_expertuser"),
-    path('api/comment/', include("Comment.urls", namespace="comment"), name="url_comment"),
-    path('api/token/', TokenObtainPairView.as_view(serializer_class=CustomJWTSerializer)),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('', 
+        include([
+            path('user/', include("BaseUser.urls", namespace="baseuser"), name="url_user"),
+            path('personaluser/', include("PersonalUser.urls", namespace="personaluser"), name="url_personaluser"),
+            path('expert/', include("ExpertUser.urls", namespace="expertuser"), name="url_expertuser"),
+            path('comment/', include("Comment.urls", namespace="comment"), name="url_comment"),
+            path('token/', TokenObtainPairView.as_view(serializer_class=CustomJWTSerializer)),
+            path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+            path('', schema_view.with_ui('swagger', cache_timeout=0), name="swagger-schema"),
+        ])
+    ),
 ]
