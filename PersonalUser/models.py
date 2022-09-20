@@ -11,7 +11,7 @@ class PersonalAccount(models.Model):
     favoriteexperts=models.ManyToManyField(Expert)
 
     def __str__(self):
-        return self.user
+        return self.user.email
 
     class Meta:
         verbose_name        = "Custome"
