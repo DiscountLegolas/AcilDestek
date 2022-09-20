@@ -49,7 +49,8 @@ class Expert(models.Model):
         return openings
     
 
-
+    def __str__(self):
+        return self.user
     
     class Meta:
         verbose_name        = "Expert"
