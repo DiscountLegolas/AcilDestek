@@ -23,8 +23,6 @@ class Expert(models.Model):
     user = models.OneToOneField(BaseUser, on_delete=models.CASCADE, primary_key=True)
     description=models.TextField(verbose_name="Açıklama",null=True)
     companyname=models.CharField(max_length=50,verbose_name="İşyeri İsmi",null=True)
-    openingtime=models.TimeField(verbose_name="Açılış Zamanı",null=True)
-    closingtime=models.TimeField(verbose_name="Kapanış Zamanı",null=True)
     long = models.DecimalField(max_digits=9, decimal_places=6,default=1.0)
     lat  =  models.DecimalField(max_digits=9, decimal_places=6,default=1.0)
     category=models.ForeignKey(ServiceCategory,on_delete=models.CASCADE,verbose_name="Kategorisi")
@@ -70,10 +68,12 @@ class OpeningHours(models.Model):
     weekday = models.IntegerField(_('Weekday'), choices=WEEKDAYS)
     from_hour = models.TimeField(_('Opening'))
     to_hour = models.TimeField(_('Closing'))
+    is_closed=models.BooleanField(default=True)
 
-    def __str__(self):
-        return _("%(weekday)s  %(from_hour)s - %(to_hour)s") % {
-            'weekday': self.weekday,
+    def str(self):
+        return _(" %(company)s - %(weekday)s  %(from_hour)s - %(to_hour)s") % {
+            'company':self.company.companyname,
+            'weekday': self.get_weekday_display(),
             'from_hour': self.from_hour,
             'to_hour': self.to_hour
         }

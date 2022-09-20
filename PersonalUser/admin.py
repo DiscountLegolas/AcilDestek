@@ -3,4 +3,4 @@ from .models import PersonalAccount
 # Register your models here.
 @admin.register(PersonalAccount)
 class PersonalAccount(admin.ModelAdmin):
-    list_display=["user","favoriteexperts"]
+    list_display=["user"]
