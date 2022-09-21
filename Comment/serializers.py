@@ -11,7 +11,8 @@ class SerializerCreateExpertReview(serializers.ModelSerializer):
         fields = ("text","rate")
 
     def create(self, validated_data):
-        usta = Expert.objects.get(id=self.context['view'].kwargs.get('expert_id'))
+        user=BaseUser.objects.get(id=self.kwargs.get("expert_id"))
+        usta = Expert.objects.get(user=user)
         return ExpertReview.objects.create(user=self.context["request"].user, text=validated_data["text"],rate=validated_data["rate"],expert=usta)
 
 class SerializerExpertReviewListByExpert(serializers.ModelSerializer):
