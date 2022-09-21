@@ -1,14 +1,15 @@
 from rest_framework.generics import ListAPIView,CreateAPIView,DestroyAPIView
 from Comment.models import ExpertReview
 from ExpertUser.models import Expert
+from acildestek.BaseUser.permissions import IsCustomer
 from .serializers import SerializerDeleteExpertReview, SerializerExpertReviewListByExpert,SerializerCreateExpertReview
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated,AllowAny
 from .pagination import ExpertReviewPagination
 
 
 class ExpertReviewListByExpertAPIView(ListAPIView):
     serializer_class   = SerializerExpertReviewListByExpert
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     pagination_class   = ExpertReviewPagination
 
     def get_queryset(self):
@@ -18,14 +19,4 @@ class ExpertReviewListByExpertAPIView(ListAPIView):
 class CreateExpertReviewAPIView(CreateAPIView):
     queryset           = ExpertReview.objects.all()
     serializer_class   = SerializerCreateExpertReview
-    permission_classes = [IsAuthenticated]
-
-'''
-class DeleteExpertReviewAPIView(DestroyAPIView):
-   queryset           = ExpertReview.objects.all()
-   lookup_field       = "id"
-    permission_classes = [IsAuthenticated,IsOwner]    serializer_class   = SerializerDeleteExpertReview
-
-    def perform_destroy(self, instance):
-        instance.delete()
-'''
+    permission_classes = [IsAuthenticated,IsCustomer]

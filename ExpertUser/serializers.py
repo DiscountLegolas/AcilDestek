@@ -1,13 +1,44 @@
+from calendar import weekday
 import json
 from types import SimpleNamespace
 from Category.serializers import *
 from django.contrib.sites.shortcuts import get_current_site 
-from .models import Expert
+from .models import Expert, ExpertImage, OpeningHours
 from rest_framework import serializers
 from BaseUser.models import BaseUser
 from BaseUser.serializers import *
 from Location.models import *
 from django.contrib.auth.hashers import make_password
+
+
+class ImageListSerializer ( serializers.Serializer ) :
+    image = serializers.ListField(
+                child=serializers.FileField( max_length=100000,
+                                            allow_empty_file=False,
+                                        use_url=True )
+                                )
+    def create(self, validated_data):
+        image=validated_data.pop('image')
+        for img in image:
+            photo=ExpertImage.objects.create(image=img,expert=Expert.objects.get(user=self.context["request"].user))
+        return photo
+
+class OpeningHoursSerializer(serializers.ModelSerializer):
+    def create(self, validated_data):
+        openinghour=OpeningHours.objects.create(company=Expert.objects.get(user=self.context["request"].user),weekday=validated_data["weekday"],from_hour=validated_data["from_hour"],to_hour=validated_data["to_hour"])
+        return openinghour
+    class Meta:
+        model = OpeningHours
+        fields = (
+                'weekday',
+                'from_hour',
+                'to_hour'
+            )
+
+
+class CreateOpeningHoursSerializer(serializers.Serializer):
+    openinghours = OpeningHoursSerializer(many=True)
+
 
 class SerializerExpertProfile(serializers.ModelSerializer):
     

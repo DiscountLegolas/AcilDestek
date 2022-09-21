@@ -43,7 +43,7 @@ class Expert(models.Model):
         return reviewcount
     
     @property
-    def workinghours(self):
+    def get_workinghours(self):
         openings=OpeningHours.objects.filter(company=self)
         return openings
     
@@ -88,7 +88,7 @@ class OpeningHours(models.Model):
 class ExpertImage(models.Model):
     id = models.UUIDField( primary_key = True,default = uuid.uuid4,editable = False)
     expert = models.ForeignKey(Expert,on_delete=models.CASCADE,verbose_name="Expert")
-    image = models.ImageField(upload_to="images",verbose_name="Expert Image")
+    image = models.ImageField(verbose_name="Expert Image")
 
     def __str__(self):
         return self.expert.companyname

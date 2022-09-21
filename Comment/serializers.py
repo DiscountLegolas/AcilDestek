@@ -13,7 +13,7 @@ class SerializerCreateExpertReview(serializers.ModelSerializer):
     def create(self, validated_data):
         user=BaseUser.objects.get(id=self.kwargs.get("expert_id"))
         usta = Expert.objects.get(user=user)
-        return ExpertReview.objects.create(user=self.context["request"].user, text=validated_data["text"],rate=validated_data["rate"],expert=usta)
+        return ExpertReview.objects.create(user=PersonalAccount.objects.get(user__id=self.context["request"].user.id), text=validated_data["text"],rate=validated_data["rate"],expert=usta)
 
 class SerializerExpertReviewListByExpert(serializers.ModelSerializer):
     user = SerializerPersonalUserSimpleInfo()
@@ -21,9 +21,3 @@ class SerializerExpertReviewListByExpert(serializers.ModelSerializer):
     class Meta:
         model  = ExpertReview
         fields = ("user","text","expert","createdDate","rate")
-
-class SerializerDeleteExpertReview(serializers.ModelSerializer):
-    
-    class Meta:
-        model  = ExpertReview
-        fields = ("user")
