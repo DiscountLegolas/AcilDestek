@@ -47,6 +47,11 @@ class Expert(models.Model):
         openings=OpeningHours.objects.filter(company=self)
         return openings
     
+    @property
+    def expertimages(self):
+        images=ExpertImage.objects.filter(expert=self)
+        return images
+    
 
     def __str__(self):
         return self.user.email+self.companyname
