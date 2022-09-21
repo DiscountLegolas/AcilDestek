@@ -41,7 +41,8 @@ class CreateOpeningHoursSerializer(serializers.Serializer):
             exists=OpeningHours.objects.filter(company=Expert.objects.get(user=self.context["request"].user),weekday=openinghour["weekday"])
             if exists.count() != 0:
                 oh=exists.first()
-                my_data =json.loads(openinghour)
+                jsonstr=json.dumps(openinghour)
+                my_data =json.loads(jsonstr)
                 keys = list(my_data.keys())
                 for key in keys:
                     setattr(oh, key, my_data[key])
