@@ -1,7 +1,7 @@
 from rest_framework.generics import ListAPIView,CreateAPIView,DestroyAPIView
 from Comment.models import ExpertReview
 from ExpertUser.models import Expert
-from acildestek.BaseUser.permissions import IsCustomer
+from BaseUser.permissions import IsCustomer
 from .serializers import SerializerDeleteExpertReview, SerializerExpertReviewListByExpert,SerializerCreateExpertReview
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from .pagination import ExpertReviewPagination
