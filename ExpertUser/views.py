@@ -31,7 +31,7 @@ class ExpertUserRegisterAPIView(CreateAPIView):
 
 
 
-class OpeningHoursCreateApiView(ListCreateAPIView):
+class OpeningHoursCreateApiView(CreateAPIView):
     permission_classes=[IsAuthenticated,IsExpert]
     serializer_class = CreateOpeningHoursSerializer
     queryset=OpeningHours.objects.all()
