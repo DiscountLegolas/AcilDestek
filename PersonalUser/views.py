@@ -10,8 +10,7 @@ class PersonalUserProfileAPIView(generics.ListAPIView):
     permission_classes=[AllowAny]
     serializer_class   = SerializerPersonalUserProfile
     def get_queryset(self):
-        user=BaseUser.objects.get(id=self.kwargs.get("customer_id"))
-        return PersonalAccount.objects.filter(user=user)
+        return PersonalAccount.objects.filter(user__id=self.kwargs.get("customer_id"))
 
 class PersonalUserRegisterAPIView(CreateAPIView):
     permission_classes=[AllowAny]

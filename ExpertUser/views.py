@@ -22,8 +22,7 @@ class ExpertUserProfileAPIView(ListAPIView):
     permission_classes=[AllowAny]
     serializer_class   = SerializerExpertProfile
     def get_queryset(self):
-        user=BaseUser.objects.get(id=self.kwargs.get("id"))
-        return Expert.objects.filter(user=user)
+        return Expert.objects.filter(user__id=self.kwargs.get("id"))
 
 class ExpertUserRegisterAPIView(CreateAPIView):
     permission_classes=[AllowAny]
