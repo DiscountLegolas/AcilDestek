@@ -1,3 +1,5 @@
+from asyncio.windows_events import NULL
+from genericpath import exists
 from rest_framework.response import Response
 from Category.serializers import *
 from django.contrib.sites.shortcuts import get_current_site 
@@ -35,7 +37,14 @@ class CreateOpeningHoursSerializer(serializers.Serializer):
     openinghours = OpeningHoursSerializer(many=True)
     def create(self, validated_data):
         for openinghour in validated_data['openinghours']:
-            opening=OpeningHours.objects.create(company=Expert.objects.get(user=self.context["request"].user),weekday=openinghour["weekday"],from_hour=openinghour["from_hour"],to_hour=openinghour["to_hour"])
+            exists=OpeningHours.objects.filter(company=Expert.objects.get(user=self.context["request"].user),weekday=openinghour["weekday"])
+            if exists.count() != 0:
+                oh=exists.first()
+                oh.from_hour=openinghour["from_hour"]
+                oh.to_hour=openinghour["to_hour"]
+                oh.save()
+            else:
+                opening=OpeningHours.objects.create(company=Expert.objects.get(user=self.context["request"].user),weekday=openinghour["weekday"],from_hour=openinghour["from_hour"],to_hour=openinghour["to_hour"])
         return Response(self.data)
 
 class SerializerExpertProfile(serializers.ModelSerializer):
