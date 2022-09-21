@@ -1,6 +1,6 @@
 from rest_framework.permissions import AllowAny,IsAuthenticated
 from ExpertUser.models import *
-from acildestek.BaseUser.permissions import IsExpert
+from BaseUser.permissions import IsExpert
 from .serializers import *
 from django.contrib.auth.tokens import default_token_generator
 from rest_framework.generics import ListAPIView,CreateAPIView,ListCreateAPIView
