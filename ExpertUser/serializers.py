@@ -40,9 +40,9 @@ class CreateOpeningHoursSerializer(serializers.Serializer):
             exists=OpeningHours.objects.filter(company=Expert.objects.get(user=self.context["request"].user),weekday=openinghour["weekday"])
             if exists.count() != 0:
                 oh=exists.first()
-                oh.from_hour=openinghour["from_hour"] or " "
-                oh.to_hour=openinghour["to_hour"] or " "
-                oh.is_closed=openinghour["is_closed"] or True
+                oh.from_hour=openinghour["from_hour"] or oh.from_hour
+                oh.to_hour=openinghour["to_hour"] or oh.to_hour
+                oh.is_closed=openinghour["is_closed"] or oh.is_closed
                 oh.save()
             else:
                 opening=OpeningHours.objects.create(company=Expert.objects.get(user=self.context["request"].user),**openinghour)
