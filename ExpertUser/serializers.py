@@ -42,9 +42,10 @@ class CreateOpeningHoursSerializer(serializers.Serializer):
                 oh=exists.first()
                 oh.from_hour=openinghour["from_hour"]
                 oh.to_hour=openinghour["to_hour"]
+                is_closed=openinghour["is_closed"]
                 oh.save()
             else:
-                opening=OpeningHours.objects.create(company=Expert.objects.get(user=self.context["request"].user),weekday=openinghour["weekday"],from_hour=openinghour["from_hour"],to_hour=openinghour["to_hour"])
+                opening=OpeningHours.objects.create(company=Expert.objects.get(user=self.context["request"].user),weekday=openinghour["weekday"],from_hour=openinghour["from_hour"],to_hour=openinghour["to_hour"],is_closed=openinghour["is_closed"])
         return Response(self.data)
 
 class SerializerExpertProfile(serializers.ModelSerializer):
