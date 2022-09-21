@@ -7,7 +7,7 @@ from rest_framework import generics
 
 
 class PersonalUserProfileAPIView(generics.ListAPIView):
-    permission_classes=[IsAuthenticated]
+    permission_classes=[AllowAny]
     serializer_class   = SerializerPersonalUserProfile
     def get_queryset(self):
         user=BaseUser.objects.get(id=self.kwargs.get("customer_id"))
