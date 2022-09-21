@@ -8,7 +8,7 @@ from rest_framework import viewsets
 from rest_framework import generics
 
 from rest_framework.parsers import *
-from acildestek.ExpertUser.serializers import ImageListSerializer
+from ExpertUser.serializers import ImageListSerializer
 
 class UploadExpertPhotos(viewsets.ModelViewSet):
     permission_classes=[IsAuthenticated,IsExpert]
