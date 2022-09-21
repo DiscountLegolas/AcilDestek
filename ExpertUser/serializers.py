@@ -42,7 +42,8 @@ class CreateOpeningHoursSerializer(serializers.Serializer):
                 oh=exists.first()
                 oh.from_hour=openinghour["from_hour"] or oh.from_hour
                 oh.to_hour=openinghour["to_hour"] or oh.to_hour
-                oh.is_closed=openinghour["is_closed"] or oh.is_closed
+                if openinghour["is_closed"] != None:
+                    oh.is_closed=openinghour["is_closed"]
                 oh.save()
             else:
                 opening=OpeningHours.objects.create(company=Expert.objects.get(user=self.context["request"].user),**openinghour)
