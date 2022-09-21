@@ -1,4 +1,3 @@
-from asyncio.windows_events import NULL
 from genericpath import exists
 from rest_framework.response import Response
 from Category.serializers import *
