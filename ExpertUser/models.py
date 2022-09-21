@@ -1,5 +1,6 @@
 from unicodedata import decimal
 from django.db import models
+import uuid
 from BaseUser.models import *
 from django.db.models import Sum
 from django.apps import apps
@@ -77,3 +78,16 @@ class OpeningHours(models.Model):
             'from_hour': self.from_hour,
             'to_hour': self.to_hour
         }
+
+
+class ExpertImage(models.Model):
+    id = models.UUIDField( primary_key = True,default = uuid.uuid4,editable = False)
+    expert = models.ForeignKey(Expert,on_delete=models.CASCADE,verbose_name="Expert")
+    image = models.ImageField(upload_to="images",verbose_name="Expert Image")
+
+    def __str__(self):
+        return self.user.companyname+self.id
+
+    class Meta:
+        verbose_name = "Expert Image"
+        verbose_name_plural = "Expert Images"
