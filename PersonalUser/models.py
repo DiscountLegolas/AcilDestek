@@ -14,6 +14,6 @@ class PersonalAccount(models.Model):
         return self.user.email
 
     class Meta:
-        verbose_name        = "Custome"
+        verbose_name        = "Customer"
         verbose_name_plural = "Customers"
         db_table            = "PersonalUsers"
