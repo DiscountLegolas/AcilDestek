@@ -1,6 +1,7 @@
 from genericpath import exists
 from rest_framework.response import Response
 from Category.serializers import *
+import json
 from django.contrib.sites.shortcuts import get_current_site 
 from .models import Expert, ExpertImage, OpeningHours
 from rest_framework import serializers
@@ -40,13 +41,12 @@ class CreateOpeningHoursSerializer(serializers.Serializer):
             exists=OpeningHours.objects.filter(company=Expert.objects.get(user=self.context["request"].user),weekday=openinghour["weekday"])
             if exists.count() != 0:
                 oh=exists.first()
-                if openinghour["from_hour"]!=oh.from_hour:
-                    oh.from_hour=openinghour["from_hour"]
-                if openinghour["to_hour"]!=oh.to_hour:
-                    oh.to_hour=openinghour["to_hour"]
-                if openinghour["is_closed"] != None:
-                    oh.is_closed=openinghour["is_closed"]
-                oh.save()
+                my_data =json.loads(openinghour)
+                keys = list(my_data.keys())
+                for key in keys:
+                    setattr(oh, key, my_data[key])
+                    
+                oh.save(update_fields=keys)
             else:
                 opening=OpeningHours.objects.create(company=Expert.objects.get(user=self.context["request"].user),**openinghour)
         return Response(self.data)
