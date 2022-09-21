@@ -91,7 +91,7 @@ class ExpertImage(models.Model):
     image = models.ImageField(upload_to="images",verbose_name="Expert Image")
 
     def __str__(self):
-        return self.user.companyname+self.id
+        return self.expert.companyname + self.id
 
     class Meta:
         verbose_name = "Expert Image"
