@@ -1,6 +1,4 @@
-from calendar import weekday
-import json
-from types import SimpleNamespace
+from rest_framework.response import Response
 from Category.serializers import *
 from django.contrib.sites.shortcuts import get_current_site 
 from .models import Expert, ExpertImage, OpeningHours
@@ -21,12 +19,9 @@ class ImageListSerializer ( serializers.Serializer ) :
         image=validated_data.pop('image')
         for img in image:
             photo=ExpertImage.objects.create(image=img,expert=Expert.objects.get(user=self.context["request"].user))
-        return photo
+        return Response(validated_data)
 
 class OpeningHoursSerializer(serializers.ModelSerializer):
-    def create(self, validated_data):
-        openinghour=OpeningHours.objects.create(company=Expert.objects.get(user=self.context["request"].user),weekday=validated_data["weekday"],from_hour=validated_data["from_hour"],to_hour=validated_data["to_hour"])
-        return openinghour
     class Meta:
         model = OpeningHours
         fields = (
@@ -38,7 +33,10 @@ class OpeningHoursSerializer(serializers.ModelSerializer):
 
 class CreateOpeningHoursSerializer(serializers.Serializer):
     openinghours = OpeningHoursSerializer(many=True)
-
+    def create(self, validated_data):
+        for openinghour in validated_data['openinghours']:
+            opening=OpeningHours.objects.create(company=Expert.objects.get(user=self.context["request"].user),weekday=openinghour["weekday"],from_hour=openinghour["from_hour"],to_hour=openinghour["to_hour"])
+        return Response(validated_data)
 
 class SerializerExpertProfile(serializers.ModelSerializer):
     
