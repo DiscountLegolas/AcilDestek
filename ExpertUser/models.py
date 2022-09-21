@@ -73,8 +73,8 @@ class OpeningHours(models.Model):
     company = models.ForeignKey(Expert,on_delete=models.CASCADE, verbose_name=_('Company'))
     weekday = models.IntegerField(_('Weekday'), choices=WEEKDAYS)
     is_closed=models.BooleanField(default=True)
-    from_hour = models.TimeField(_('Opening'))
-    to_hour = models.TimeField(_('Closing'))
+    from_hour = models.TimeField(_('Opening'),blank=True,null=True)
+    to_hour = models.TimeField(_('Closing'),blank=True,null=True)
 
     def __str__(self):
         return _("%(company)s - %(weekday)s  %(from_hour)s - %(to_hour)s") % {

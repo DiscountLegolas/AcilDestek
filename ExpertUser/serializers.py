@@ -29,7 +29,8 @@ class OpeningHoursSerializer(serializers.ModelSerializer):
         fields = (
                 'weekday',
                 'from_hour',
-                'to_hour'
+                'to_hour',
+                'is_closed'
             )
 
 
