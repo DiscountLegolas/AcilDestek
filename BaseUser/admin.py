@@ -5,4 +5,4 @@ from .models import BaseUser
 @admin.register(BaseUser)
 class BaseUserAdmin(admin.ModelAdmin):
     list_display = ["id","first_name","last_name","email","is_staff","is_active","date_joined"]
-    list_filter = ["is_staff","is_active"]
+    list_filter = ("is_staff","is_active",)

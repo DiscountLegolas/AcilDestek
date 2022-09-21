@@ -11,5 +11,5 @@ class OpeningHourseAdmin(admin.ModelAdmin):
 
 @admin.register(ExpertImage)
 class ExpertImageAdmin(admin.ModelAdmin):
-    list_display = ["expert","image"]
-    list_filter = ["expert"]
+    list_display = ["expert","image","id"]
+    list_filter = ("expert",)
