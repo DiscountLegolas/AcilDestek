@@ -36,7 +36,7 @@ class CreateOpeningHoursSerializer(serializers.Serializer):
     def create(self, validated_data):
         for openinghour in validated_data['openinghours']:
             opening=OpeningHours.objects.create(company=Expert.objects.get(user=self.context["request"].user),weekday=openinghour["weekday"],from_hour=openinghour["from_hour"],to_hour=openinghour["to_hour"])
-        return Response(validated_data)
+        return Response(self.data)
 
 class SerializerExpertProfile(serializers.ModelSerializer):
     
