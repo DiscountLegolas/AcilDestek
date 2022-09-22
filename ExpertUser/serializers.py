@@ -39,10 +39,11 @@ class CreateOpeningHoursSerializer(serializers.Serializer):
     def create(self, validated_data):
         for openinghour in validated_data['openinghours']:
             OpeningHours.objects.create(company=Expert.objects.get(user=self.context["request"].user),**openinghour)
-        return Response(self.data)
+        return Response("Opening Hours Created")
                 
 class UpdateOpeningHoursSerializer(serializers.Serializer):
     openinghours = OpeningHoursSerializer(many=True)
+    
     def update(self,instance, validated_data):
         for openinghour in validated_data['openinghours']:
             oh=OpeningHours.objects.get(company__user__id=self.context['view'].kwargs.get("pk"),weekday=openinghour["weekday"])
@@ -53,7 +54,7 @@ class UpdateOpeningHoursSerializer(serializers.Serializer):
                 setattr(oh, key, my_data[key])
                     
             oh.save(update_fields=keys)
-        return Response(self.data)
+        return Response("Opening Hours Updated")
 
 
 class SerializerExpertProfile(serializers.ModelSerializer):
