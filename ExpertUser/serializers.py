@@ -93,7 +93,7 @@ class RegisterExpertSerializer(serializers.ModelSerializer):
     lat  =  serializers.DecimalField(max_digits=9, decimal_places=6)
     class Meta:
         model = BaseUser
-        fields = ('user','category','long',"lat","description","companyname","openingtime","closingtime")
+        fields = ('user','category','long',"lat","description","companyname")
         extra_kwargs = {
             'first_name': {'required': True},
             'last_name': {'required': True},
