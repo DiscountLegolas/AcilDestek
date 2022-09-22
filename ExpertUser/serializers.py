@@ -43,7 +43,7 @@ class CreateOpeningHoursSerializer(serializers.Serializer):
                 
 class UpdateOpeningHoursSerializer(serializers.Serializer):
     openinghours = OpeningHoursSerializer(many=True)
-    def update(self, validated_data):
+    def update(self,instance, validated_data):
         for openinghour in validated_data['openinghours']:
             oh=OpeningHours.objects.get(company__user__id=self.context['view'].kwargs.get("pk"),weekday=openinghour["weekday"])
             jsonstr=json.dumps(openinghour)
