@@ -9,6 +9,6 @@ urlpatterns = [
     path("register/",ExpertUserRegisterAPIView.as_view(),name="url_register"),
     path("profile/<int:id>",ExpertUserProfileAPIView.as_view()),
     path("profile/addhours/",OpeningHoursCreateApiView.as_view()),
-    path("profile/updatehours/<int:expert_id>",OpeningHoursUpdateApiView.as_view()),   
+    path("profile/updatehours/<int:pk>",OpeningHoursUpdateApiView.as_view()),   
 
 ]
