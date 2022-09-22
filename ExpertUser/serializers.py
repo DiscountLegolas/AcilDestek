@@ -1,7 +1,9 @@
 from genericpath import exists
+from urllib import response
 from rest_framework.response import Response
 from Category.serializers import *
 import json
+from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.sites.shortcuts import get_current_site 
 from .models import Expert, ExpertImage, OpeningHours
 from rest_framework import serializers
@@ -35,26 +37,40 @@ class OpeningHoursSerializer(serializers.ModelSerializer):
 
 
 class CreateOpeningHoursSerializer(serializers.Serializer):
-    openinghours = OpeningHoursSerializer(many=True)
+    openinghours = OpeningHoursSerializer(many=True,write_only=True)
+    responselist=serializers.SerializerMethodField()
+
+    def get_responselist(self,obj):
+        ohlist=OpeningHours.objects.filter(company=Expert.objects.get(user=self.context["request"].user)).values('weekday','from_hour','to_hour','is_closed')
+        return ohlist
+
+
     def create(self, validated_data):
         for openinghour in validated_data['openinghours']:
             OpeningHours.objects.create(company=Expert.objects.get(user=self.context["request"].user),**openinghour)
-        return Response(validated_data)
+        return Response(data=self.data)
                 
 class UpdateOpeningHoursSerializer(serializers.Serializer):
-    openinghours = OpeningHoursSerializer(many=True)
-    
+    openinghours = OpeningHoursSerializer(many=True,write_only=True)
+    responselist=serializers.SerializerMethodField()
+
+    def get_responselist(self,obj):
+        ohlist=OpeningHours.objects.filter(company__user__id=self.context['view'].kwargs.get("pk")).values('weekday','from_hour','to_hour','is_closed')
+        return ohlist
+
+
+
     def update(self,instance, validated_data):
         for openinghour in validated_data['openinghours']:
             oh=OpeningHours.objects.get(company__user__id=self.context['view'].kwargs.get("pk"),weekday=openinghour["weekday"])
-            jsonstr=json.dumps(openinghour)
+            jsonstr=json.dumps(openinghour,cls=DjangoJSONEncoder)
             my_data =json.loads(jsonstr)
             keys = list(my_data.keys())
             for key in keys:
                 setattr(oh, key, my_data[key])
                     
             oh.save(update_fields=keys)
-        return Response(validated_data)
+        return Response(data=self.data)
 
 
 class SerializerExpertProfile(serializers.ModelSerializer):
