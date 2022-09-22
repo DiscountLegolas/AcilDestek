@@ -66,7 +66,8 @@ class Expert(models.Model):
 class OpeningHours(models.Model):
 
     class Meta:
-        verbose_name = _('Working time')  # plurale tantum
+        verbose_name = _('Working time')
+        unique_together = ('company', 'weekday',)
         verbose_name_plural = _('Working times')
         ordering = [ 'weekday', 'from_hour']
 
