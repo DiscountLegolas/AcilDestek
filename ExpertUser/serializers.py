@@ -79,14 +79,14 @@ class SerializerExpertProfile(serializers.ModelSerializer):
     reviews=serializers.SerializerMethodField()
 
     def get_reviews(self,obj):
-        newarr = [{'created_date': i.createdDate,'text':i.text,'rate':i.rate,'fullname':i.customernamesurname} for i in ExpertReview.objects.filter(expert__user__id=self.context['view'].kwargs.get("id"))]
+        newarr = [{'created_date': i.createdDate,'text':i.text,'rate':i.rate,'fullname':i.customernamesurname} for i in ExpertReview.objects.filter(expert__user__id=self.context['view'].kwargs.get("id"), user__isnull=False)]
         return newarr
 
     
     user=BaseUserSerializer()
     class Meta:
         model  = Expert
-        fields = ('user',"description","companyname","averagescore","workinghours","expertimages","reviews")
+        fields = ('user',"description","companyname","countofreviews","averagescore","workinghours","expertimages","reviews")
 
 
 class RegisterExpertSerializer(serializers.ModelSerializer):
@@ -133,4 +133,4 @@ class SerializerExpertSimpleInfo(serializers.ModelSerializer):
 
     class Meta:
         model  = Expert
-        fields = ("id","description","phone","companyname","averagescore","expertimages","openorclose")
+        fields = ("id","description","phone","companyname","countofreviews","averagescore","expertimages","openorclose")

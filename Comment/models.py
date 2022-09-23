@@ -15,7 +15,7 @@ class ExpertReview(models.Model):
     
     @property
     def customernamesurname(self):
-        return self.user.user.first_name+self.user.user.last_name
+        return self.user.user.first_name+" "+self.user.user.last_name
 
     def __str__(self):
         return  self.text 
