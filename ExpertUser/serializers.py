@@ -87,8 +87,6 @@ class RegisterExpertSerializer(serializers.ModelSerializer):
     description=serializers.CharField(required=True)
     companyname=serializers.CharField(required=True)
     category=serializers.CharField(required=True)
-    openingtime=serializers.TimeField(required=True)
-    closingtime=serializers.TimeField(required=True)
     long = serializers.DecimalField(max_digits=9, decimal_places=6)
     lat  =  serializers.DecimalField(max_digits=9, decimal_places=6)
     class Meta:

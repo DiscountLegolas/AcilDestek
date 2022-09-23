@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-6*d$vs*qt42k55(ug8xrvikj(y-r#&5ma)2wu*&f$cp+mkvffs
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['acildestek.herokuapp.com']
+ALLOWED_HOSTS = ['acildestek.herokuapp.com','*']
 
 AUTH_USER_MODEL = 'BaseUser.BaseUser'
 # Application definition
@@ -41,11 +41,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'mptt',
     'drf_yasg',
     'BaseUser',
     'ExpertUser',
     'PersonalUser',
+    'GuestUser',
     'Category',
     'Location',
     'Comment',
@@ -143,7 +143,7 @@ REST_FRAMEWORK = {
 }
 SIMPLE_JWT={
    'ACCESS_TOKEN_LIFETIME':timedelta(days=10),
-   'REFRESH_TOKEN_LIFETIME': timedelta(days=10),
+   'REFRESH_TOKEN_LIFETIME': timedelta(days=50),
 }
 
 # Static files (CSS, JavaScript, Images)

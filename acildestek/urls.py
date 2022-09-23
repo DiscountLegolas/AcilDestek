@@ -81,6 +81,7 @@ urlpatterns = [
             path('personaluser/', include("PersonalUser.urls", namespace="personaluser"), name="url_personaluser"),
             path('expert/', include("ExpertUser.urls", namespace="expertuser"), name="url_expertuser"),
             path('comment/', include("Comment.urls", namespace="comment"), name="url_comment"),
+            path('guest/', include("GuestUser.urls", namespace="comment"), name="url_comment"),
             path('token/', TokenObtainPairView.as_view(serializer_class=CustomJWTSerializer)),
             path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
             path('', schema_view.with_ui('swagger', cache_timeout=0), name="swagger-schema"),

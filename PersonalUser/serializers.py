@@ -1,7 +1,9 @@
 from dataclasses import fields
 import email
 from venv import create
-from django.contrib.sites.shortcuts import get_current_site 
+from django.contrib.sites.shortcuts import get_current_site
+
+from ExpertUser.models import Expert 
 from .models import PersonalAccount
 from rest_framework import serializers
 from BaseUser.models import BaseUser
@@ -20,6 +22,13 @@ class SerializerPersonalUserProfile(serializers.ModelSerializer):
         model  = PersonalAccount
         fields = "__all__"
 
+class PersonalUserCallExpertSerializer(serializers.Serializer):
+        callerid = serializers.IntegerField()
+        calledexpertphone = serializers.CharField(max_length=200)
+        def create(self, validated_data):
+            c=PersonalAccount.objects.get(id==validated_data['callerid'])
+            c.previusexpertcalls.add(Expert.objects.get(user__phone=validated_data['calledexpertphone']))
+            return c
 
 class RegisterUserSerializer(serializers.ModelSerializer):
 

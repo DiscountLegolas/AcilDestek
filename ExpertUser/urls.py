@@ -3,7 +3,6 @@ from .views import ExpertUserProfileAPIView,ExpertUserRegisterAPIView,OpeningHou
 from PersonalUser import views
 from rest_framework.routers import DefaultRouter
 
-router = DefaultRouter()
 app_name="expertuser"
 urlpatterns = [
     path("register/",ExpertUserRegisterAPIView.as_view(),name="url_register"),
