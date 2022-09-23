@@ -1,6 +1,7 @@
 from rest_framework.permissions import AllowAny,IsAuthenticated
 from ExpertUser.models import *
 from BaseUser.permissions import IsExpert
+from BaseUser.permissions import IsCustomer
 from .serializers import *
 from django.contrib.auth.tokens import default_token_generator
 from rest_framework.generics import ListAPIView,CreateAPIView,UpdateAPIView
@@ -16,7 +17,11 @@ class UploadExpertPhotos(viewsets.ModelViewSet):
     parser_classes = (MultiPartParser, FormParser,)
     queryset=ExpertImage.objects.all()
 
-
+class GetGoodExpertsNearMeProfileAPIView(ListAPIView):
+    permission_classes=[IsCustomer]
+    serializer_class   = SerializerExpertSimpleInfo
+    def get_queryset(self):
+        return Expert.objects.filter(user__id=self.kwargs.get("id"))
 
 class ExpertUserProfileAPIView(ListAPIView):
     permission_classes=[AllowAny]

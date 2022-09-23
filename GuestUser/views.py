@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.permissions import AllowAny
 from rest_framework.generics import CreateAPIView,ListAPIView
-from GuestUser.serializers import GuestCallExpertSerializer
+from GuestUser.serializers import *
 from GuestUser.models import GuestUser
 from GuestUser.serializers import GuestSerializer
 
@@ -13,7 +13,7 @@ class CallExpertCreateApiView(CreateAPIView):
 
 class GuestRegisterCreateApiView(CreateAPIView):
     permission_classes=[AllowAny]
-    serializer_class = GuestSerializer
+    serializer_class = GuestRegisterSerializer
     queryset=GuestUser.objects.all()
 
 class GetGuestInfoApiView(ListAPIView):

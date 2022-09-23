@@ -4,7 +4,9 @@ from rest_framework.response import Response
 from Category.serializers import *
 import json
 from django.core.serializers.json import DjangoJSONEncoder
-from django.contrib.sites.shortcuts import get_current_site 
+from django.contrib.sites.shortcuts import get_current_site
+
+from Comment.models import ExpertReview 
 from .models import Expert, ExpertImage, OpeningHours
 from rest_framework import serializers
 from BaseUser.models import BaseUser
@@ -74,11 +76,17 @@ class UpdateOpeningHoursSerializer(serializers.Serializer):
 
 
 class SerializerExpertProfile(serializers.ModelSerializer):
+    reviews=serializers.SerializerMethodField()
+
+    def get_reviews(self,obj):
+        newarr = [{'created_date': i.createdDate,'text':i.text,'rate':i.rate,'fullname':i.customernamesurname} for i in ExpertReview.objects.filter(expert__user__id=self.context['view'].kwargs.get("id"))]
+        return newarr
+
     
     user=BaseUserSerializer()
     class Meta:
         model  = Expert
-        fields = "__all__"
+        fields = ('user',"description","companyname","averagescore","workinghours","expertimages","reviews")
 
 
 class RegisterExpertSerializer(serializers.ModelSerializer):
@@ -116,16 +124,13 @@ class RegisterExpertSerializer(serializers.ModelSerializer):
         return expert
 
 class SerializerExpertSimpleInfo(serializers.ModelSerializer):
-    email=serializers.SerializerMethodField()
-    namesurname=serializers.SerializerMethodField()
+    phone=serializers.SerializerMethodField()
     id=serializers.IntegerField(source="user.id")
 
-    def get_email(self,obj):
-        return obj.user.email
-    def get_namesurname(self,obj):
-        return obj.user.name_surname()
+    def get_phone(self,obj):
+        return obj.user.phone
     
 
     class Meta:
         model  = Expert
-        fields = ("id","namesurname","phone","averagescore")
+        fields = ("id","description","phone","companyname","averagescore","expertimages","openorclose")

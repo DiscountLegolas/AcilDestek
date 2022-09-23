@@ -1,6 +1,7 @@
-from unicodedata import decimal
 from django.db import models
 import uuid
+import datetime
+from django.utils import timezone
 from BaseUser.models import *
 from django.db.models import Sum
 from django.apps import apps
@@ -32,24 +33,33 @@ class Expert(models.Model):
     @property
     def averagescore(self):
         ExpertReview = apps.get_model(app_label='Comment', model_name='ExpertReview')
-        reviewcount= decimal(ExpertReview.objects.filter(expert=self).count())
-        sumofratings=ExpertReview.objects.filter(expert=self).aggregate(Sum('rate'))
+        reviewcount= float(ExpertReview.objects.filter(expert=self).count())
+        sumofratings=ExpertReview.objects.filter(expert=self).aggregate(Sum('rate'))['rate__sum']
         return sumofratings/reviewcount
     
     @property
     def countofreviews(self):
         ExpertReview = apps.get_model(app_label='Comment', model_name='ExpertReview')
-        reviewcount= decimal(ExpertReview.objects.filter(expert=self).count())
+        reviewcount= float(ExpertReview.objects.filter(expert=self).count())
         return reviewcount
     
     @property
-    def get_workinghours(self):
-        openings=OpeningHours.objects.filter(company=self)
+    def workinghours(self):
+        openings=OpeningHours.objects.filter(company=self).values('weekday','from_hour','to_hour','is_closed')
         return openings
+
+    @property
+    def openorclose(self):
+        now=timezone.now()
+        opening=OpeningHours.objects.filter(company=self,weekday=(now.weekday()+1))
+        a=False
+        if now.hour<opening.to_hour and now.hour>opening.from_hour:
+            a=True
+        return a
     
     @property
     def expertimages(self):
-        images=ExpertImage.objects.filter(expert=self)
+        images=ExpertImage.objects.filter(expert=self).values('image')
         return images
     
 

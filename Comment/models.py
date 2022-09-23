@@ -13,6 +13,10 @@ class ExpertReview(models.Model):
     user = models.ForeignKey(PersonalAccount, on_delete=models.SET_NULL,null=True,verbose_name="Yorumu Atan Müşteri")
     createdDate = models.DateTimeField(default=datetime.now,verbose_name="Oluşturulma Tarihi")
     
+    @property
+    def customernamesurname(self):
+        return self.user.user.first_name+self.user.user.last_name
+
     def __str__(self):
         return  self.text 
     
