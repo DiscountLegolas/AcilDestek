@@ -1,3 +1,5 @@
+import decimal
+import math
 from django.db import models
 import uuid
 import datetime
@@ -57,6 +59,11 @@ class Expert(models.Model):
             a=True
         return a
     
+    def distancetopoint(self,lat,long):
+        p = [self.long,self.lat]
+        q = [long, lat]
+        return decimal.Decimal(math.dist(p, q))
+
     @property
     def expertimages(self):
         images=ExpertImage.objects.filter(expert=self).values('image')

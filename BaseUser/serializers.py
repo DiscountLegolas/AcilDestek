@@ -1,7 +1,25 @@
 from .models import BaseUser
 from Location.serializers import İlçeSerializer
+from PersonalUser.models import PersonalAccount
+from ExpertUser.models import Expert
+from GuestUser.models import GuestUser
 from rest_framework.validators import UniqueValidator
 from rest_framework import serializers
+
+
+class CallExpertSerializer(serializers.Serializer):
+        callerid = serializers.IntegerField()
+        calledexpertphone = serializers.CharField(max_length=200)
+        def create(self, validated_data):
+            if self.context["request"].user.is_anonymous:
+                gu=GuestUser.objects.get(id==validated_data['callerid'])
+                gu.previusexpertcalls.add(Expert.objects.get(user__phone=validated_data['calledexpertphone']))
+                return gu
+ 
+            else:
+                c=PersonalAccount.objects.get(id==validated_data['callerid'])
+                c.previusexpertcalls.add(Expert.objects.get(user__phone=validated_data['calledexpertphone']))
+                return c
 
 
 class BaseUserSerializer(serializers.ModelSerializer):

@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-6*d$vs*qt42k55(ug8xrvikj(y-r#&5ma)2wu*&f$cp+mkvffs'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = FALSE
 
 ALLOWED_HOSTS = ['acildestek.herokuapp.com','*']
 
@@ -156,10 +156,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
-DEBUG=FALSE
-
-
-
 
 
 # Default primary key field type

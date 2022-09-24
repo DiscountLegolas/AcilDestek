@@ -17,7 +17,4 @@ class PersonalUserRegisterAPIView(CreateAPIView):
     serializer_class = RegisterUserSerializer
     queryset = PersonalAccount.objects.all()
 
-class CallExpertCreateApiView(CreateAPIView):
-    permission_classes=[AllowAny]
-    serializer_class = PersonalUserCallExpertSerializer
-    queryset=PersonalAccount.objects.all()
+

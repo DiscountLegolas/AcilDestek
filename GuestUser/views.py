@@ -5,10 +5,6 @@ from GuestUser.serializers import *
 from GuestUser.models import GuestUser
 from GuestUser.serializers import GuestSerializer
 
-class CallExpertCreateApiView(CreateAPIView):
-    permission_classes=[AllowAny]
-    serializer_class = GuestCallExpertSerializer
-    queryset=GuestUser.objects.all()
 
 
 class GuestRegisterCreateApiView(CreateAPIView):
