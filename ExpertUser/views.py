@@ -3,6 +3,7 @@ from ExpertUser.models import *
 from BaseUser.permissions import IsExpert
 from BaseUser.permissions import IsCustomer
 from .serializers import *
+from rest_framework.mixins import CreateModelMixin
 from django.contrib.auth.tokens import default_token_generator
 from rest_framework.generics import ListAPIView,CreateAPIView,UpdateAPIView
 from rest_framework import viewsets
@@ -37,8 +38,8 @@ class OpeningHoursCreateApiView(CreateAPIView):
     queryset=OpeningHours.objects.all()
 
 
-class OpeningHoursUpdateApiView(UpdateAPIView):
+class OpeningHoursUpdateApiView(CreateModelMixin,viewsets.GenericViewSet):
     permission_classes=[IsAuthenticated,IsExpert]
-    serializer_class = UpdateOpeningHoursSerializer
     queryset=OpeningHours.objects.all()
-
+    def get_serializer_class(self):
+        return UpdateOpeningHoursSerializer

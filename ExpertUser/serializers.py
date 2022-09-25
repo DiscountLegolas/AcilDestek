@@ -57,14 +57,14 @@ class UpdateOpeningHoursSerializer(serializers.Serializer):
     responselist=serializers.SerializerMethodField()
 
     def get_responselist(self,obj):
-        ohlist=OpeningHours.objects.filter(company__user__id=self.context['view'].kwargs.get("pk")).values('weekday','from_hour','to_hour','is_closed')
+        ohlist=OpeningHours.objects.filter(company=Expert.objects.get(user=self.context["request"].user)).values('weekday','from_hour','to_hour','is_closed')
         return ohlist
 
 
 
-    def update(self,instance, validated_data):
+    def create(self, validated_data,*args,**kwargs):
         for openinghour in validated_data['openinghours']:
-            oh=OpeningHours.objects.get(company__user__id=self.context['view'].kwargs.get("pk"),weekday=openinghour["weekday"])
+            oh=OpeningHours.objects.get(company=Expert.objects.get(user=self.context["request"].user),weekday=openinghour["weekday"])
             jsonstr=json.dumps(openinghour,cls=DjangoJSONEncoder)
             my_data =json.loads(jsonstr)
             keys = list(my_data.keys())

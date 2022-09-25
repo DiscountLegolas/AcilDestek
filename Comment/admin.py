@@ -4,4 +4,4 @@ from .models import ExpertReview
 
 @admin.register(ExpertReview)
 class ExpertReviewAdmin(admin.ModelAdmin):
-    list_display=["user","expert","text","rate","createdDate"]
+    list_display=["user","expert","text","rate","createdDate","isAnonymous"]
