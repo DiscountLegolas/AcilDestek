@@ -100,11 +100,8 @@ class RegisterExpertSerializer(serializers.ModelSerializer):
     class Meta:
         model = BaseUser
         fields = ('user','category','long',"lat","description","companyname")
-        extra_kwargs = {
-            'first_name': {'required': True},
-            'last_name': {'required': True},
-            'phone':{'required':True},
-        }
+
+        
     def create(self, validated_data):
         userdict=validated_data["user"]
         user = BaseUser.objects.create(
