@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'Category',
     'Location',
     'Comment',
+    'storages',
 ]
 
 SITE_ID = 1
@@ -169,3 +170,16 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'asistanglobalcompany@gmail.com'
 EMAIL_HOST_PASSWORD = 'qgfggouevobqqith'
 EMAIL_PORT = 587
+
+
+#AWS S3 SECTION
+
+AWS_ACCESS_KEY_ID = 'AKIA4Y6LRHU2C5BFVPZB'
+AWS_SECRET_ACCESS_KEY = '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'
+AWS_STORAGE_BUCKET_NAME = 'acildestekbucket'
+AWS_S3_SIGNATURE_VERSION = 's3v4'
+AWS_S3_REGION_NAME = 'us-east-1'
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None
+AWS_S3_VERIFY = True
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
