@@ -45,6 +45,11 @@ class Expert(models.Model):
         ExpertReview = apps.get_model(app_label='Comment', model_name='ExpertReview')
         reviewcount= float(ExpertReview.objects.filter(expert=self).count())
         return reviewcount
+
+    @property
+    def reviews(self):
+        ExpertReview = apps.get_model(app_label='Comment', model_name='ExpertReview')
+        return ExpertReview.objects.filter(expert=self)
     
     @property
     def workinghours(self):
@@ -67,7 +72,7 @@ class Expert(models.Model):
 
     @property
     def expertimages(self):
-        images=ExpertImage.objects.filter(expert=self).values('image')
+        images=ExpertImage.objects.filter(expert=self)
         return images
     
 

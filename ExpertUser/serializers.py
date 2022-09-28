@@ -5,7 +5,7 @@ from Category.serializers import *
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.sites.shortcuts import get_current_site
-
+from django.http import HttpResponse
 from Comment.models import ExpertReview 
 from .models import Expert, ExpertImage, OpeningHours
 from rest_framework import serializers
@@ -14,18 +14,26 @@ from BaseUser.serializers import *
 from Location.models import *
 from django.contrib.auth.hashers import make_password
 
+class ExpertImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ExpertImage
+        fields = ('image',)
+        
+
+
 
 class ImageListSerializer ( serializers.Serializer ) :
     image = serializers.ListField(
-                child=serializers.FileField( max_length=100000,
-                                            allow_empty_file=False,
-                                        use_url=True )
+                       child=serializers.FileField( max_length=100000,
+                                         allow_empty_file=False,
+                                         use_url=False ),write_only=True
                                 )
     def create(self, validated_data):
         image=validated_data.pop('image')
         for img in image:
-            photo=ExpertImage.objects.create(image=img,expert=Expert.objects.get(user=self.context["request"].user))
-        return Response(validated_data)
+            expertimage=ExpertImage.objects.create(image=img,expert=Expert.objects.get(user=self.context["request"].user))
+        return Response({"Success": "Resimleriniz oluşturuldu"})
+        
 
 class OpeningHoursSerializer(serializers.ModelSerializer):
     class Meta:
@@ -54,7 +62,7 @@ class CreateOpeningHoursSerializer(serializers.Serializer):
                 
 class UpdateOpeningHoursSerializer(serializers.Serializer):
     openinghours = OpeningHoursSerializer(many=True,write_only=True)
-    responselist=serializers.SerializerMethodField()
+    hours=OpeningHoursSerializer(many=True,read_only=True)
 
     def get_responselist(self,obj):
         ohlist=OpeningHours.objects.filter(company=Expert.objects.get(user=self.context["request"].user)).values('weekday','from_hour','to_hour','is_closed')
@@ -123,6 +131,7 @@ class RegisterExpertSerializer(serializers.ModelSerializer):
 class SerializerExpertSimpleInfo(serializers.ModelSerializer):
     phone=serializers.SerializerMethodField()
     id=serializers.IntegerField(source="user.id")
+    expertimages=ExpertImageSerializer(many=True)
 
     def get_phone(self,obj):
         return obj.user.phone

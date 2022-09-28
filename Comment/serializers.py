@@ -21,3 +21,14 @@ class SerializerExpertReviewListByExpert(serializers.ModelSerializer):
     class Meta:
         model  = ExpertReview
         fields = ("user","text","expert","createdDate","rate")
+
+class ExpertReviewSimpleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ExpertImage
+        fields = (
+                'rate',
+                'text',
+                'createdDate',
+                'customernamesurname'
+            )
+        

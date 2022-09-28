@@ -10,12 +10,12 @@ from rest_framework import viewsets
 from rest_framework import generics
 
 from rest_framework.parsers import *
-from ExpertUser.serializers import ImageListSerializer
 
-class UploadExpertPhotos(viewsets.ModelViewSet):
+class UploadExpertPhoto(viewsets.ModelViewSet):
+    schema=None
     permission_classes=[IsAuthenticated,IsExpert]
+    parser_classes = (MultiPartParser,FormParser,)
     serializer_class = ImageListSerializer
-    parser_classes = (MultiPartParser, FormParser,)
     queryset=ExpertImage.objects.all()
 
 
