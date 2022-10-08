@@ -73,7 +73,7 @@ class Expert(models.Model):
 
     @property
     def expertimages(self):
-        images=ExpertImage.objects.filter(expert=self).values('image')
+        images=ExpertImage.objects.filter(expert=self)
         return images
     
 
