@@ -3,6 +3,7 @@ from email.policy import default
 import math
 from django.db import models
 import uuid
+import json
 import datetime
 from django.utils import timezone
 from BaseUser.models import *
@@ -30,7 +31,7 @@ class Expert(models.Model):
     companyname=models.CharField(max_length=50,verbose_name="İşyeri İsmi",null=True)
     long = models.DecimalField(max_digits=9, decimal_places=6,default=1.0)
     lat  =  models.DecimalField(max_digits=9, decimal_places=6,default=1.0)
-    category=models.ForeignKey(ServiceCategory,on_delete=models.CASCADE,verbose_name="Kategorisi")
+    categories=models.ManyToManyField(ServiceCategory,verbose_name="Kategorisi")
 
 
     @property
@@ -72,7 +73,7 @@ class Expert(models.Model):
 
     @property
     def expertimages(self):
-        images=ExpertImage.objects.filter(expert=self)
+        images=ExpertImage.objects.filter(expert=self).values('image')
         return images
     
 

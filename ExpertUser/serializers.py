@@ -62,7 +62,7 @@ class CreateOpeningHoursSerializer(serializers.Serializer):
                 
 class UpdateOpeningHoursSerializer(serializers.Serializer):
     openinghours = OpeningHoursSerializer(many=True,write_only=True)
-    hours=OpeningHoursSerializer(many=True,read_only=True)
+    responselist=serializers.SerializerMethodField()
 
     def get_responselist(self,obj):
         ohlist=OpeningHours.objects.filter(company=Expert.objects.get(user=self.context["request"].user)).values('weekday','from_hour','to_hour','is_closed')
@@ -85,6 +85,7 @@ class UpdateOpeningHoursSerializer(serializers.Serializer):
 
 class SerializerExpertProfile(serializers.ModelSerializer):
     reviews=serializers.SerializerMethodField()
+    expertimages=ExpertImageSerializer(many=True)
 
     def get_reviews(self,obj):
         newarr = [{'created_date': i.createdDate,'text':i.text,'rate':i.rate,'fullname':i.customernamesurname} for i in ExpertReview.objects.filter(expert__user__id=self.context['view'].kwargs.get("id"), user__isnull=False)]

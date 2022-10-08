@@ -3,7 +3,7 @@ from .models import Expert,OpeningHours,ExpertImage
 # Register your models here.
 @admin.register(Expert)
 class ExpertAdmin(admin.ModelAdmin):
-    list_display=["user","description","companyname","category","long","lat"]
+    list_display=["user","description","companyname","long","lat"]
 
 @admin.register(OpeningHours)
 class OpeningHourseAdmin(admin.ModelAdmin):

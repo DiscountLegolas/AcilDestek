@@ -2,12 +2,13 @@ import decimal
 from django.http import HttpResponse  
 from django.utils.http import  urlsafe_base64_decode
 from rest_framework.generics import CreateAPIView,ListAPIView
-
+import json
 from BaseUser.serializers import CallExpertSerializer
 from ExpertUser.serializers import SerializerExpertSimpleInfo
 from GuestUser.models import GuestUser
 from PersonalUser.models import PersonalAccount
-from ExpertUser.models import Expert    
+from ExpertUser.models import Expert
+from Category.models import ServiceCategory    
 from .tokens import account_activation_token 
 from rest_framework.permissions import AllowAny
 from django.contrib.auth import get_user_model
@@ -45,14 +46,16 @@ class GetGoodExpertsNearMeAPIView(ListAPIView):
     serializer_class   = SerializerExpertSimpleInfo
     
     def get_queryset(self):
-        long=decimal.Decimal(self.request.GET.get("long")) 
-        lat=decimal.Decimal(self.request.GET.get("lat"))
+        request_body = json.loads(self.request.body.decode('utf-8'))
+        categories=ServiceCategory.objects.filter(name__in=request_body['categories'])
+        long=decimal.Decimal(request_body['long']) 
+        lat=decimal.Decimal(request_body['lat'])
         if self.request.user.is_anonymous:
-            sorted_results = sorted(Expert.objects.all(), key= lambda t: (t.distancetopoint(long=long,lat=lat),t.averagescore))
+            sorted_results = sorted(Expert.objects.filter(categories__in=categories), key= lambda t: (t.distancetopoint(long=long,lat=lat),t.averagescore))
             sorted_results=sorted_results[:10]
             return sorted_results
         elif self.request.user.is_regular:
-            qs = Expert.objects.filter(user__il=self.request.user.il,user__ilçe=self.request.user.ilçe)
+            qs = Expert.objects.filter(user__il=self.request.user.il,user__ilçe=self.request.user.ilçe,categories__in=categories)
             unsorted_results = qs.all()
             sorted_results = sorted(unsorted_results, key= lambda t: (t.distancetopoint(long=long,lat=lat),t.averagescore))
             sorted_results=sorted_results[:10]
