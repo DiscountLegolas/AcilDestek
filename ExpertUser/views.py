@@ -30,6 +30,10 @@ class ExpertUserRegisterAPIView(CreateAPIView):
     serializer_class = RegisterExpertSerializer
     queryset = Expert.objects.all()
 
+class CategoriesSetApiView(CreateAPIView):
+    permission_classes=[IsAuthenticated,IsExpert]
+    serializer_class = AddCategoriesSerializer
+    queryset=ServiceCategory.objects.all()
 
 
 class OpeningHoursCreateApiView(CreateAPIView):

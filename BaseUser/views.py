@@ -2,7 +2,12 @@ import decimal
 from django.http import HttpResponse  
 from django.utils.http import  urlsafe_base64_decode
 from rest_framework.generics import CreateAPIView,ListAPIView
+from rest_framework.views import APIView
 import json
+from django.http import Http404
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 from BaseUser.serializers import CallExpertSerializer
 from ExpertUser.serializers import SerializerExpertSimpleInfo
 from GuestUser.models import GuestUser
@@ -44,12 +49,14 @@ class CallExpertCreateApiView(CreateAPIView):
 class GetGoodExpertsNearMeAPIView(ListAPIView):
     permission_classes=[AllowAny]
     serializer_class   = SerializerExpertSimpleInfo
-    
+
     def get_queryset(self):
-        request_body = json.loads(self.request.body.decode('utf-8'))
-        categories=ServiceCategory.objects.filter(name__in=request_body['categories'])
-        long=decimal.Decimal(request_body['long']) 
-        lat=decimal.Decimal(request_body['lat'])
+        cats=self.request.GET.getlist("categories",'')
+        categories=ServiceCategory.objects.all()
+        if cats is not '':
+            categories=ServiceCategory.objects.filter(name__in=cats)
+        long=decimal.Decimal(self.request.GET.get("long")) 
+        lat=decimal.Decimal(self.request.GET.get("lat"))
         if self.request.user.is_anonymous:
             sorted_results = sorted(Expert.objects.filter(categories__in=categories), key= lambda t: (t.distancetopoint(long=long,lat=lat),t.averagescore))
             sorted_results=sorted_results[:10]
@@ -60,4 +67,3 @@ class GetGoodExpertsNearMeAPIView(ListAPIView):
             sorted_results = sorted(unsorted_results, key= lambda t: (t.distancetopoint(long=long,lat=lat),t.averagescore))
             sorted_results=sorted_results[:10]
             return sorted_results
-

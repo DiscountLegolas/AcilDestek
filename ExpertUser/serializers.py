@@ -1,5 +1,7 @@
 from genericpath import exists
+from unicodedata import name
 from urllib import response
+from requests import delete
 from rest_framework.response import Response
 from Category.serializers import *
 import json
@@ -59,6 +61,24 @@ class CreateOpeningHoursSerializer(serializers.Serializer):
         for openinghour in validated_data['openinghours']:
             OpeningHours.objects.create(company=Expert.objects.get(user=self.context["request"].user),**openinghour)
         return Response(data=self.data)
+
+class AddCategoriesSerializer(serializers.Serializer):
+    categories = serializers.ListField(child=serializers.CharField())
+    responselist=serializers.SerializerMethodField()
+
+    def get_responselist(self,obj):
+        expert=Expert.objects.get(user=self.context["request"].user)
+        ohlist=expert.categories.values('name')
+        return ohlist
+
+
+    def create(self, validated_data):
+        expert=Expert.objects.get(user=self.context["request"].user)
+        expert.categories.clear()
+        for category in validated_data['categories']:
+            expert.categories.add(ServiceCategory.objects.get(name=category))
+            expert.save()
+        return Response(data=self.data)
                 
 class UpdateOpeningHoursSerializer(serializers.Serializer):
     openinghours = OpeningHoursSerializer(many=True,write_only=True)
@@ -103,12 +123,11 @@ class RegisterExpertSerializer(serializers.ModelSerializer):
     user=BaseUserRegisterSerializer()
     description=serializers.CharField(required=True)
     companyname=serializers.CharField(required=True)
-    category=serializers.CharField(required=True)
     long = serializers.DecimalField(max_digits=9, decimal_places=6)
     lat  =  serializers.DecimalField(max_digits=9, decimal_places=6)
     class Meta:
         model = BaseUser
-        fields = ('user','category','long',"lat","description","companyname")
+        fields = ('user','long',"lat","description","companyname")
 
         
     def create(self, validated_data):
@@ -125,18 +144,17 @@ class RegisterExpertSerializer(serializers.ModelSerializer):
         )
         user.set_password(userdict['password'])
         user.sendactivationmail(get_current_site(self.context['request']))
-        user.save()
-        expert=Expert.objects.create(user=user,long=validated_data['long'],lat=validated_data["lat"],category=ServiceCategory.objects.get(name=validated_data['category']),description=validated_data['description'],companyname=validated_data['companyname'],openingtime=validated_data['openingtime'],closingtime=validated_data['closingtime'])
+        expert=Expert.objects.create(user=user,long=validated_data['long'],lat=validated_data["lat"],description=validated_data['description'],companyname=validated_data['companyname'])
         return expert
 
 class SerializerExpertSimpleInfo(serializers.ModelSerializer):
     phone=serializers.SerializerMethodField()
-    id=serializers.IntegerField(source="user.id")
-    expertimages=ExpertImageSerializer(many=True)
+    id=serializers.IntegerField(source="user.id",required=False)
+    expertimages=ExpertImageSerializer(many=True,required=False)
 
     def get_phone(self,obj):
         return obj.user.phone
-    
+
 
     class Meta:
         model  = Expert

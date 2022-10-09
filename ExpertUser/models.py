@@ -31,21 +31,21 @@ class Expert(models.Model):
     companyname=models.CharField(max_length=50,verbose_name="İşyeri İsmi",null=True)
     long = models.DecimalField(max_digits=9, decimal_places=6,default=1.0)
     lat  =  models.DecimalField(max_digits=9, decimal_places=6,default=1.0)
-    categories=models.ManyToManyField(ServiceCategory,verbose_name="Kategorisi")
+    categories=models.ManyToManyField(ServiceCategory,verbose_name="Kategorisi",null=True,blank=True)
 
 
     @property
     def averagescore(self):
         ExpertReview = apps.get_model(app_label='Comment', model_name='ExpertReview')
-        reviewcount= float(ExpertReview.objects.filter(expert=self).count())
-        sumofratings=ExpertReview.objects.filter(expert=self).aggregate(Sum('rate'))['rate__sum']
+        reviewcount= float(ExpertReview.objects.filter(expert=self).count()) or 1
+        sumofratings=ExpertReview.objects.filter(expert=self).aggregate(Sum('rate'))['rate__sum'] or 0
         return sumofratings/reviewcount
     
     @property
     def countofreviews(self):
         ExpertReview = apps.get_model(app_label='Comment', model_name='ExpertReview')
         reviewcount= float(ExpertReview.objects.filter(expert=self).count())
-        return reviewcount
+        return int(reviewcount) or 0
 
     @property
     def reviews(self):
