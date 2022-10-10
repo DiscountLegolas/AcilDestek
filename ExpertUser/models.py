@@ -3,6 +3,7 @@ from email.policy import default
 import math
 from django.db import models
 import uuid
+from django.contrib.postgres.indexes import GinIndex
 import json
 import datetime
 from django.utils import timezone
@@ -84,6 +85,13 @@ class Expert(models.Model):
         verbose_name        = "Expert"
         verbose_name_plural = "Experts"
         db_table="Experts"
+        indexes = [
+            GinIndex(
+                name='bas_expert_ln_gin_idx', 
+                fields=['companyname'], 
+                opclasses=['gin_trgm_ops'],
+            )
+        ]
 
 
 
@@ -99,7 +107,7 @@ class OpeningHours(models.Model):
     weekday = models.IntegerField(_('Weekday'), choices=WEEKDAYS)
     is_closed=models.BooleanField(default=True)
     from_hour = models.TimeField(_('Opening'),blank=True,null=True)
-    to_hour = models.TimeField(_('Closing'),blank=True,null=True)
+    to_hour = models.TimeField(_('Closing'),blank=True)
 
     def __str__(self):
         return _("%(company)s - %(weekday)s  %(from_hour)s - %(to_hour)s") % {

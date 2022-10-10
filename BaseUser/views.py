@@ -2,12 +2,6 @@ import decimal
 from django.http import HttpResponse  
 from django.utils.http import  urlsafe_base64_decode
 from rest_framework.generics import CreateAPIView,ListAPIView
-from rest_framework.views import APIView
-import json
-from django.http import Http404
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
 from BaseUser.serializers import CallExpertSerializer
 from ExpertUser.serializers import SerializerExpertSimpleInfo
 from GuestUser.models import GuestUser
@@ -17,8 +11,8 @@ from Category.models import ServiceCategory
 from .tokens import account_activation_token 
 from rest_framework.permissions import AllowAny
 from django.contrib.auth import get_user_model
-import django
-from .tokens import account_activation_token  
+from .tokens import account_activation_token 
+from django.contrib.postgres.search import TrigramSimilarity 
 from django.utils.encoding import force_str
 
 def activate(request, uidb64, token):  
@@ -67,3 +61,12 @@ class GetGoodExpertsNearMeAPIView(ListAPIView):
             sorted_results = sorted(unsorted_results, key= lambda t: (t.distancetopoint(long=long,lat=lat),t.averagescore))
             sorted_results=sorted_results[:10]
             return sorted_results
+
+class SearchAPIView(ListAPIView):
+    permission_classes=[AllowAny]
+    serializer_class   = SerializerExpertSimpleInfo
+
+    def get_queryset(self):
+        q=self.request.GET.get('q','')
+        results = Expert.objects.filter(companyname__trigram_similar=q).annotate(similar=TrigramSimilarity('companyname',q)).order_by('-similar')
+        return results
