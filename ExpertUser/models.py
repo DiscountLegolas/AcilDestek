@@ -107,7 +107,7 @@ class OpeningHours(models.Model):
     weekday = models.IntegerField(_('Weekday'), choices=WEEKDAYS)
     is_closed=models.BooleanField(default=True)
     from_hour = models.TimeField(_('Opening'),blank=True,null=True)
-    to_hour = models.TimeField(_('Closing'),blank=True)
+    to_hour = models.TimeField(_('Closing'),blank=True,null=True)
 
     def __str__(self):
         return _("%(company)s - %(weekday)s  %(from_hour)s - %(to_hour)s") % {
@@ -122,8 +122,6 @@ class ExpertImage(models.Model):
     id = models.UUIDField( primary_key = True,default = uuid.uuid4,editable = False)
     expert = models.ForeignKey(Expert,on_delete=models.CASCADE,verbose_name="Expert")
     image = models.ImageField(verbose_name="Expert Image")
-    created_at = models.DateTimeField(auto_now_add=True,blank=True,null=True)
-    updated_at = models.DateTimeField(auto_now=True,blank=True,null=True)
 
     def __str__(self):
         return self.expert.companyname
