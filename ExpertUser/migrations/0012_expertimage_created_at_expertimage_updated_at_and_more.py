@@ -12,14 +12,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='expertimage',
-            name='created_at',
-        ),
-        migrations.RemoveField(
-            model_name='expertimage',
-            name='updated_at',
-        ),
         migrations.AddField(
             model_name='expertimage',
             name='created_at',
