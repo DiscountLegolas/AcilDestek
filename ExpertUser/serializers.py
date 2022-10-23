@@ -115,7 +115,7 @@ class SerializerExpertProfile(serializers.ModelSerializer):
     user=BaseUserSerializer()
     class Meta:
         model  = Expert
-        fields = ('user',"description","companyname","countofreviews","averagescore","workinghours","expertimages","reviews")
+        fields = ('user',"description","companyname","countofreviews","averagescore","workinghours","expertimages","reviews","long","lat")
 
 
 class RegisterExpertSerializer(serializers.ModelSerializer):

@@ -26,6 +26,7 @@ class ExpertReviewSimpleSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExpertImage
         fields = (
+                'id',
                 'rate',
                 'text',
                 'createdDate',
