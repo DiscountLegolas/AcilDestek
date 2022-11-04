@@ -78,6 +78,7 @@ urlpatterns = [
     path('', 
         include([
             path('user/', include("BaseUser.urls", namespace="baseuser"), name="url_user"),
+            path('category/', include("Category.urls", namespace="baseuser"), name="url_user"),
             path('personaluser/', include("PersonalUser.urls", namespace="personaluser"), name="url_personaluser"),
             path('expert/', include("ExpertUser.urls", namespace="expertuser"), name="url_expertuser"),
             path('comment/', include("Comment.urls", namespace="comment"), name="url_comment"),
