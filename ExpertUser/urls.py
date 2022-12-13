@@ -11,7 +11,7 @@ uploadphotos = UploadExpertPhoto.as_view({
 app_name="expertuser"
 urlpatterns = [
     path("register/",ExpertUserRegisterAPIView.as_view(),name="url_register"),
-    path("profile/<int:id>",ExpertUserProfileAPIView.as_view()),
+    path("profile/<int:id>",ExpertUserProfileAPIView.as_view(),name="url_expert_profile"),
     path("profile/addhours/",OpeningHoursCreateApiView.as_view()),
     path("profile/updatehours/",openinghoursupdate),   
     path("profile/uploadphotos/",uploadphotos),

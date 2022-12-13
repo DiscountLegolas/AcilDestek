@@ -68,5 +68,5 @@ class SearchAPIView(ListAPIView):
 
     def get_queryset(self):
         q=self.request.GET.get('q','')
-        results = Expert.objects.filter(companyname__trigram_similar=q).annotate(similar=TrigramSimilarity('companyname',q)).order_by('-similar')
+        results = Expert.objects.filter(companyname__trigram_similar=q).annotate(similar=TrigramSimilarity('companyname',q)).filter(similarity__gt=0.01).order_by('-similar')
         return results

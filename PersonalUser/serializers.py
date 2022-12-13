@@ -1,9 +1,5 @@
-from dataclasses import fields
 import email
-from venv import create
 from django.contrib.sites.shortcuts import get_current_site
-
-from ExpertUser.models import Expert 
 from .models import PersonalAccount
 from rest_framework import serializers
 from BaseUser.models import BaseUser
@@ -55,6 +51,26 @@ class RegisterUserSerializer(serializers.ModelSerializer):
         user.sendactivationmail(get_current_site(self.context['request']))
         personaluser=PersonalAccount.objects.create(user=user)
         return user
+
+
+class SerializerPersonalUserCommentInfo(serializers.ModelSerializer):
+
+    namesurname=serializers.SerializerMethodField()
+    email=serializers.CharField(source="user.email")
+    phone=serializers.CharField(source="user.phone")
+    id = serializers.IntegerField(source="user.id")
+    
+
+    def get_namesurname(self,obj):
+        fn=obj.user.first_name
+        ln=obj.user.last_name
+        fn=fn[0]+'*'*(len(fn)-1)
+        ln=ln[0]+'*'*(len(fn)-1)
+        return fn+" "+ln
+
+    class Meta:
+        model  = PersonalAccount
+        fields = ["id","email","phone","namesurname",]
 
 class SerializerPersonalUserSimpleInfo(serializers.ModelSerializer):
 

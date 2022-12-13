@@ -1,13 +1,8 @@
-from genericpath import exists
-from unicodedata import name
-from urllib import response
-from requests import delete
 from rest_framework.response import Response
 from Category.serializers import *
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.sites.shortcuts import get_current_site
-from django.http import HttpResponse
 from Comment.models import ExpertReview 
 from .models import Expert, ExpertImage, OpeningHours
 from rest_framework import serializers

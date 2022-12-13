@@ -16,7 +16,7 @@ class SerializerCreateExpertReview(serializers.ModelSerializer):
         return ExpertReview.objects.create(user=PersonalAccount.objects.get(user__id=self.context["request"].user.id), text=validated_data["text"],rate=validated_data["rate"],expert=usta)
 
 class SerializerExpertReviewListByExpert(serializers.ModelSerializer):
-    user = SerializerPersonalUserSimpleInfo()
+    user = SerializerPersonalUserCommentInfo()
 
     class Meta:
         model  = ExpertReview

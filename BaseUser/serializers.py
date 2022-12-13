@@ -1,4 +1,5 @@
 from .models import BaseUser
+from django.contrib.auth.hashers import make_password
 from Location.serializers import İlçeSerializer
 from PersonalUser.models import PersonalAccount
 from ExpertUser.models import Expert
@@ -42,3 +43,21 @@ class BaseUserRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = BaseUser
         fields= (  "first_name","password","last_name","email","phone","il","ilçe")
+
+
+class ResetPasswordSerializer(serializers.ModelSerializer):
+    email=serializers.CharField(max_length=100)
+    password=serializers.CharField(max_length=100)
+    class Meta:
+        model=BaseUser
+        fields='__all__'
+    def save(self):
+        email=self.validated_data['email']
+        password=self.validated_data['password']
+        if BaseUser.objects.filter(email=email).exists():
+            user=BaseUser.objects.get(email=email)
+            user.password=make_password(password)
+            user.save()
+            return user
+        else:
+            raise serializers.ValidationError({'error':'please enter valid crendentials'})  

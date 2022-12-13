@@ -1,6 +1,5 @@
 from unicodedata import name
 from django.db import models
-from mptt.models import MPTTModel, TreeForeignKey
 
 class ServiceCategory(models.Model):
 
