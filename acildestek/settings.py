@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-6*d$vs*qt42k55(ug8xrvikj(y-r#&5ma)2wu*&f$cp+mkvffs
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = FALSE
 
-ALLOWED_HOSTS = ['django-venv38.eba-apncidxr.us-west-2.elasticbeanstalk.com']
+ALLOWED_HOSTS = ['django-venv38.eba-apncidxr.us-west-2.elasticbeanstalk.com','*']
 
 AUTH_USER_MODEL = 'BaseUser.BaseUser'
 # Application definition
