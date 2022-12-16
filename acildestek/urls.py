@@ -83,6 +83,7 @@ urlpatterns = [
             path('expert/', include("ExpertUser.urls", namespace="expertuser"), name="url_expertuser"),
             path('comment/', include("Comment.urls", namespace="comment"), name="url_comment"),
             path('guest/', include("GuestUser.urls", namespace="guest"), name="url_guest"),
+            path('favourite/',include("Favourite.urls",namespace="quest"),name="url_favourite"),
             path('message/', include("Messaging.urls", namespace="message"), name="url_message"),
             path('token/', TokenObtainPairView.as_view(serializer_class=CustomJWTSerializer)),
             path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
