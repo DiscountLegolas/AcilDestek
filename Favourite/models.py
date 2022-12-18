@@ -11,5 +11,5 @@ class UserFavExpert(models.Model):
         verbose_name_plural = 'User favourite experts'
 
     def __str__(self):
-        return self.user.first_name 
+        return self.user.email 
     
