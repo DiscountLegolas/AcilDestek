@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'Category',
     'Location',
     'Comment',
+    'Favorite'
     'storages',
 ]
 
@@ -97,11 +98,11 @@ WSGI_APPLICATION = 'acildestek.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ['RDS_DB_NAME'],
-        'USER': os.environ['RDS_USERNAME'],
-        'PASSWORD': os.environ['RDS_PASSWORD'],
-        'HOST': os.environ['RDS_HOSTNAME'],
-        'PORT': os.environ['RDS_PORT'],
+        'NAME':'d5to1q2ltipgfo',
+        'USER':'igvljvrmbzjrpl',
+        'PASSWORD': '9de9adb51ccca8b379b4db4584ed18c445a71f3e358d051e7cc68f06e6d612d8',
+        'HOST': 'ec2-52-3-60-53.compute-1.amazonaws.com',
+        'PORT': '5432',
     }
 }
 
