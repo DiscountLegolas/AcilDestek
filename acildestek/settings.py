@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-6*d$vs*qt42k55(ug8xrvikj(y-r#&5ma)2wu*&f$cp+mkvffs
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = FALSE
 
-ALLOWED_HOSTS = ['https://birarasor.herokuapp.com','*']
+ALLOWED_HOSTS = ['birarasor.herokuapp.com','*']
 
 AUTH_USER_MODEL = 'BaseUser.BaseUser'
 # Application definition
