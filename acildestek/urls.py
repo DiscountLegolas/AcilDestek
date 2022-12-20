@@ -81,6 +81,7 @@ urlpatterns = [
             path('category/', include("Category.urls", namespace="baseuser"), name="url_user"),
             path('personaluser/', include("PersonalUser.urls", namespace="personaluser"), name="url_personaluser"),
             path('expert/', include("ExpertUser.urls", namespace="expertuser"), name="url_expertuser"),
+            path('employee/', include("Employee.urls", namespace="employee"), name="url_employee"),
             path('comment/', include("Comment.urls", namespace="comment"), name="url_comment"),
             path('guest/', include("GuestUser.urls", namespace="guest"), name="url_guest"),
             path('favourite/',include("Favourite.urls",namespace="quest"),name="url_favourite"),

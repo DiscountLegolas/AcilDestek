@@ -126,19 +126,25 @@ class RegisterExpertSerializer(serializers.ModelSerializer):
 
         
     def create(self, validated_data):
+        user=None
         userdict=validated_data["user"]
-        user = BaseUser.objects.create(
-            first_name   = userdict['first_name'],
-            password=make_password(userdict['password']),
-            email      = userdict['email'],
-            last_name  = userdict['last_name'],
-            phone=userdict['phone'],
-            is_expert=True,
-            il=İl.objects.get(name=userdict['il']),
-            ilçe=İlçe.objects.get(name=userdict['ilçe'])
-        )
-        user.set_password(userdict['password'])
-        user.sendactivationmail(get_current_site(self.context['request']))
+        if BaseUser.objects.filter(email=userdict['email'],is_expert=True).exists():
+            serializers.ValidationError("An Expert With This Email Already exists you can try to create different account types")
+        elif BaseUser.objects.filter(email=userdict['email']).exists()==False:
+            user=BaseUser.objects.create(
+                first_name   = userdict['first_name'],
+                password=make_password(userdict['password']),
+                email      = userdict['email'],
+                last_name  = userdict['last_name'],
+                phone=userdict['phone'],
+                is_expert=True,
+                il=İl.objects.get(name=userdict['il']),
+                ilçe=İlçe.objects.get(name=userdict['ilçe'])
+            )
+            user.sendactivationmail(get_current_site(self.context['request']))
+
+        user=BaseUser.objects.filter(email=userdict['email']).first() if user is None else user
+        user.is_expert=True
         expert=Expert.objects.create(user=user,long=validated_data['long'],lat=validated_data["lat"],description=validated_data['description'],companyname=validated_data['companyname'])
         return expert
 

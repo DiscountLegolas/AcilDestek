@@ -88,6 +88,7 @@ class BaseUser(AbstractUser):
     ilçe=models.ForeignKey(İlçe,on_delete=models.SET_NULL,null=True)
     is_expert = models.BooleanField(default=False)
     is_regular = models.BooleanField(default=False)
+    is_employee = models.BooleanField(default=False)
 
     def __str__(self):
         

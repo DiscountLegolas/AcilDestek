@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'Category',
     'Location',
     'Comment',
+    'Employee',
     'Favourite',
     'storages',
 ]
