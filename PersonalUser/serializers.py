@@ -22,7 +22,7 @@ class SerializerPersonalUserProfile(serializers.ModelSerializer):
 class RegisterUserSerializer(serializers.ModelSerializer):
 
     email = serializers.EmailField(required=True)
-    phone = serializers.CharField(required=True,validators=[UniqueValidator(queryset=BaseUser.objects.all())])
+    phone = serializers.CharField(required=True)
     password = serializers.CharField(write_only=True, required=True)
     il=serializers.CharField(required=True)
     ilçe=serializers.CharField(required=True)
@@ -37,7 +37,7 @@ class RegisterUserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user=None
         if BaseUser.objects.filter(email=validated_data['email'],is_regular=True).exists():
-            serializers.ValidationError("An Customer With This Email Already exists you can try to create different account types")
+            raise serializers.ValidationError("An Customer With This Email Already exists you can try to create different account types")
         elif BaseUser.objects.filter(email=validated_data['email']).exists()==False:
             user=BaseUser.objects.create(
                 first_name   = validated_data['first_name'],

@@ -35,8 +35,8 @@ class BaseUserSerializer(serializers.ModelSerializer):
 
 class BaseUserRegisterSerializer(serializers.ModelSerializer):
 
-    phone = serializers.CharField(required=True,validators=[UniqueValidator(queryset=BaseUser.objects.all())])
-    email = serializers.EmailField(required=True,validators=[UniqueValidator(queryset=BaseUser.objects.all())])
+    phone = serializers.CharField(required=True)
+    email = serializers.EmailField(required=True)
     password = serializers.CharField(write_only=True, required=True)
     il=serializers.CharField(required=True)
     ilçe=serializers.CharField(required=True)

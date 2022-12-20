@@ -129,7 +129,7 @@ class RegisterExpertSerializer(serializers.ModelSerializer):
         user=None
         userdict=validated_data["user"]
         if BaseUser.objects.filter(email=userdict['email'],is_expert=True).exists():
-            serializers.ValidationError("An Expert With This Email Already exists you can try to create different account types")
+            raise serializers.ValidationError("An Expert With This Email Already exists you can try to create different account types")
         elif BaseUser.objects.filter(email=userdict['email']).exists()==False:
             user=BaseUser.objects.create(
                 first_name   = userdict['first_name'],
