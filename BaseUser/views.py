@@ -1,13 +1,16 @@
 import decimal
 from django.http import HttpResponse  
 from django.utils.http import  urlsafe_base64_decode
-from rest_framework.generics import CreateAPIView,ListAPIView
-from BaseUser.serializers import CallExpertSerializer
+from rest_framework.generics import CreateAPIView,ListAPIView,GenericAPIView
+from BaseUser.serializers import CallExpertSerializer,AccountTypesSerializer
 from ExpertUser.serializers import SerializerExpertSimpleInfo
 from GuestUser.models import GuestUser
+from rest_framework.response import Response
+
 from PersonalUser.models import PersonalAccount
 from ExpertUser.models import Expert
 from Category.models import ServiceCategory    
+from BaseUser.models import BaseUser    
 from .tokens import account_activation_token 
 from rest_framework.permissions import AllowAny
 from django.contrib.auth import get_user_model
@@ -39,6 +42,24 @@ class CallExpertCreateApiView(CreateAPIView):
         else:
             return GuestUser.objects.all()
 
+class AccountTypesView(GenericAPIView):
+    permission_classes=[AllowAny]
+    def get(self, request):
+        emailistaken=True if BaseUser.objects.filter(email=self.request.GET.get("email")).exists() else False
+        if BaseUser.objects.filter(email=self.request.GET.get("email")).exists()==False:
+            emailistaken=False
+            expertprofileexists=False
+            customerprofileexists=False
+            employeeprofileexists=False
+            datatoserialize={"emailistaken":emailistaken,"expertprofileexists":expertprofileexists,"customerprofileexists":customerprofileexists,"employeeprofileexists":employeeprofileexists}
+            serializer = AccountTypesSerializer(datatoserialize)
+            return Response(serializer.data)
+        else:
+            emailistaken=True
+            user=BaseUser.objects.filter(email=self.request.GET.get("email")).first()
+            datatoserialize={"emailistaken":emailistaken,"expertprofileexists":user.is_expert,"customerprofileexists":user.is_regular,"employeeprofileexists":user.is_employee}
+            serializer = AccountTypesSerializer(datatoserialize)
+            return Response(serializer.data)
 
 class GetGoodExpertsNearMeAPIView(ListAPIView):
     permission_classes=[AllowAny]
@@ -68,5 +89,9 @@ class SearchAPIView(ListAPIView):
 
     def get_queryset(self):
         q=self.request.GET.get('q','')
-        results = Expert.objects.filter(companyname__trigram_similar=q).annotate(similarity=TrigramSimilarity('companyname',q)).filter(similarity__gt=0.01).order_by('-similarity')
+        cats=self.request.GET.getlist("categories",'')
+        categories=ServiceCategory.objects.all()
+        if cats is not '':
+            categories=ServiceCategory.objects.filter(name__in=cats)
+        results = Expert.objects.filter(categories__in=categories,companyname__trigram_similar=q).annotate(similarity=TrigramSimilarity('companyname',q)).filter(similarity__gt=0.01).order_by('-similarity')
         return results

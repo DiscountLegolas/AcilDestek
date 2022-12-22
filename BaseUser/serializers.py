@@ -32,6 +32,11 @@ class BaseUserSerializer(serializers.ModelSerializer):
         model = BaseUser
         fields= ( "id" , "first_name","last_name","email","phone","il","ilçe")
 
+class AccountTypesSerializer(serializers.Serializer):
+    emailistaken=serializers.BooleanField()
+    expertprofileexists=serializers.BooleanField()
+    customerprofileexists=serializers.BooleanField()
+    employeeprofileexists=serializers.BooleanField()
 
 class BaseUserRegisterSerializer(serializers.ModelSerializer):
 

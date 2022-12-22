@@ -26,13 +26,13 @@ WEEKDAYS = [
 
 
 class Expert(models.Model):
-
+    qrcode=models.ImageField(verbose_name="QR Code")
     user = models.OneToOneField(BaseUser, on_delete=models.CASCADE, primary_key=True)
     description=models.TextField(verbose_name="Açıklama",null=True)
     companyname=models.CharField(max_length=50,verbose_name="İşyeri İsmi",null=True)
     long = models.DecimalField(max_digits=9, decimal_places=6,default=1.0)
     lat  =  models.DecimalField(max_digits=9, decimal_places=6,default=1.0)
-    categories=models.ManyToManyField(ServiceCategory,verbose_name="Kategorisi",null=True,blank=True)
+    category=models.ForeignKey(ServiceCategory,verbose_name="Kategorisi",on_delete=models.SET_NULL,null=True)
 
 
     @property
