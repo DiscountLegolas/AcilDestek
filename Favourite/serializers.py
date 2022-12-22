@@ -1,7 +1,12 @@
 from rest_framework.serializers import ModelSerializer
 from Favourite.models import UserFavExpert
 
-class FavListCreateSerializer(ModelSerializer):
+class FavListSerializer(ModelSerializer):
+    class Meta:
+        model = UserFavExpert
+        fields = ('user','expert',)
+
+class FavCreateSerializer(ModelSerializer):
     class Meta:
         model = UserFavExpert
         fields = ('user','expert',)

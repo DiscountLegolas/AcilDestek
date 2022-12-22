@@ -1,20 +1,20 @@
 from django.shortcuts import render
-from rest_framework.generics import ListCreateAPIView,DestroyAPIView
+from rest_framework.generics import ListAPIView,CreateAPIView,DestroyAPIView
 from Favourite.models import UserFavExpert
-from Favourite.serializers import FavListCreateSerializer,FavDeleteSerializer
+from Favourite.serializers import FavListSerializer,FavCreateSerializer,FavDeleteSerializer
 # Create your views here.
 
 
 
-class FavListCreateAPIView(ListCreateAPIView):
+class FavListAPIView(ListAPIView):
 
-    serializer_class = FavListCreateSerializer
+    queryset = UserFavExpert.objects.all()
+    serializer_class = FavListSerializer
 
-    def get_queryset(self):
-        return UserFavExpert.objects.filter(user = self.request.user.id)
-        
-    def perform_create(self, serializer):
-        return serializer.save(user= serializer.validated_data['user'])
+class FavCreateAPIView(CreateAPIView):
+
+    queryset = UserFavExpert.objects.all()
+    serializer_class = FavCreateSerializer
 
 class FavDeleteAPIView(DestroyAPIView):
     queryset = UserFavExpert.objects.all()
