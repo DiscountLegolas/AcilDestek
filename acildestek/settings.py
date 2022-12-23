@@ -53,7 +53,6 @@ INSTALLED_APPS = [
     'Comment',
     'Employee',
     'Favourite',
-    'qrcode',
     'storages',
 ]
 
