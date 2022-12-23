@@ -68,16 +68,16 @@ class GetGoodExpertsNearMeAPIView(ListAPIView):
     def get_queryset(self):
         cats=self.request.GET.getlist("categories",'')
         categories=ServiceCategory.objects.all()
-        if cats is not '':
+        if cats != '':
             categories=ServiceCategory.objects.filter(name__in=cats)
         long=decimal.Decimal(self.request.GET.get("long")) 
         lat=decimal.Decimal(self.request.GET.get("lat"))
         if self.request.user.is_anonymous:
-            sorted_results = sorted(Expert.objects.filter(categories__in=categories), key= lambda t: (t.distancetopoint(long=long,lat=lat),t.averagescore))
+            sorted_results = sorted(Expert.objects.filter(category__in=categories), key= lambda t: (t.distancetopoint(long=long,lat=lat),t.averagescore))
             sorted_results=sorted_results[:10]
             return sorted_results
         elif self.request.user.is_regular:
-            qs = Expert.objects.filter(user__il=self.request.user.il,user__ilçe=self.request.user.ilçe,categories__in=categories)
+            qs = Expert.objects.filter(user__il=self.request.user.il,user__ilçe=self.request.user.ilçe,category__in=categories)
             unsorted_results = qs.all()
             sorted_results = sorted(unsorted_results, key= lambda t: (t.distancetopoint(long=long,lat=lat),t.averagescore))
             sorted_results=sorted_results[:10]
@@ -91,7 +91,7 @@ class SearchAPIView(ListAPIView):
         q=self.request.GET.get('q','')
         cats=self.request.GET.getlist("categories",'')
         categories=ServiceCategory.objects.all()
-        if cats is not '':
+        if cats != '':
             categories=ServiceCategory.objects.filter(name__in=cats)
-        results = Expert.objects.filter(categories__in=categories,companyname__trigram_similar=q).annotate(similarity=TrigramSimilarity('companyname',q)).filter(similarity__gt=0.01).order_by('-similarity')
+        results = Expert.objects.filter(category__in=categories,companyname__icontains=q)
         return results
