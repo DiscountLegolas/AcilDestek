@@ -26,7 +26,6 @@ WEEKDAYS = [
 
 
 class Expert(models.Model):
-    qrcode=models.ImageField(verbose_name="QR Code")
     user = models.OneToOneField(BaseUser, on_delete=models.CASCADE, primary_key=True)
     description=models.TextField(verbose_name="Açıklama",null=True)
     companyname=models.CharField(max_length=50,verbose_name="İşyeri İsmi",null=True)

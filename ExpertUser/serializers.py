@@ -10,7 +10,6 @@ from BaseUser.models import BaseUser
 from BaseUser.serializers import *
 from Location.models import *
 from django.contrib.auth.hashers import make_password
-import qrcode
 
 class ExpertImageSerializer(serializers.ModelSerializer):
     class Meta:
@@ -147,7 +146,7 @@ class RegisterExpertSerializer(serializers.ModelSerializer):
         user=BaseUser.objects.filter(email=userdict['email']).first() if user is None else user
         user.is_expert=True
         link="https://birarasor.herokuapp.com/expert/profile/"+str(user.id)
-        expert=Expert.objects.create(user=user,qrcode=qrcode.make(link),long=validated_data['long'],lat=validated_data["lat"],description=validated_data['description'],companyname=validated_data['companyname'])
+        expert=Expert.objects.create(user=user,long=validated_data['long'],lat=validated_data["lat"],description=validated_data['description'],companyname=validated_data['companyname'])
         return expert
 
 class SerializerExpertSimpleInfo(serializers.ModelSerializer):
