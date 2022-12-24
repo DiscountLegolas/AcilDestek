@@ -103,8 +103,7 @@ class SerializerExpertProfile(serializers.ModelSerializer):
     expertimages=ExpertImageSerializer(many=True)
 
     def get_reviews(self,obj):
-        newarr = [{'created_date': i.createdDate,'text':i.text,'rate':i.rate,'fullname':i.customernamesurname} for i in ExpertReview.objects.filter(expert__user__id=self.context['view'].kwargs.get("id"), user__isnull=False)]
-        return newarr
+        return obj.reviews
 
     
     user=BaseUserSerializer()
@@ -112,6 +111,22 @@ class SerializerExpertProfile(serializers.ModelSerializer):
         model  = Expert
         fields = ('user',"description","companyname","countofreviews","averagescore","workinghours","expertimages","reviews","long","lat")
 
+
+class SerializerExpertProfileF(serializers.ModelSerializer):
+    reviews=serializers.SerializerMethodField()
+    expertimages=ExpertImageSerializer(many=True)
+    isaddedtofavorites=serializers.SerializerMethodField()
+
+    def get_reviews(self,obj):
+        return obj.reviews
+
+    def get_isaddedtofavorites(self,obj):
+        return self.context["request"].user.favorites.filter(expert=obj).exists()
+
+    user=BaseUserSerializer()
+    class Meta:
+        model  = Expert
+        fields = ('user',"description","companyname","countofreviews","averagescore","workinghours","expertimages","reviews","long","lat","isaddedtofavorites",)
 
 class RegisterExpertSerializer(serializers.ModelSerializer):
 
@@ -161,3 +176,22 @@ class SerializerExpertSimpleInfo(serializers.ModelSerializer):
     class Meta:
         model  = Expert
         fields = ("id","description","phone","companyname","countofreviews","averagescore","expertimages","openorclose")
+
+
+
+class SerializerExpertSimpleInfoF(serializers.ModelSerializer):
+    isaddedtofavorites=serializers.SerializerMethodField()
+    id=serializers.IntegerField(source="user.id",required=False)
+    expertimages=ExpertImageSerializer(many=True,required=False)
+    phone=serializers.SerializerMethodField()
+
+    def get_phone(self,obj):
+        return obj.user.phone
+    def get_isaddedtofavorites(self,obj):
+        print(obj.user.favorites)
+        return self.context["request"].user.favorites.filter(expert=obj).exists()
+
+
+    class Meta:
+        model  = Expert
+        fields = ("id","description","phone","companyname","countofreviews","averagescore","expertimages","openorclose","isaddedtofavorites")

@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.utils.http import  urlsafe_base64_decode
 from rest_framework.generics import CreateAPIView,ListAPIView,GenericAPIView
 from BaseUser.serializers import CallExpertSerializer,AccountTypesSerializer
-from ExpertUser.serializers import SerializerExpertSimpleInfo
+from ExpertUser.serializers import SerializerExpertSimpleInfo,SerializerExpertSimpleInfoF
 from GuestUser.models import GuestUser
 from rest_framework.response import Response
 
@@ -63,8 +63,7 @@ class AccountTypesView(GenericAPIView):
 
 class GetGoodExpertsNearMeAPIView(ListAPIView):
     permission_classes=[AllowAny]
-    serializer_class   = SerializerExpertSimpleInfo
-
+    serializers_classes=(SerializerExpertSimpleInfoF,SerializerExpertSimpleInfo)
     def get_queryset(self):
         cats=self.request.GET.getlist("categories",'')
         categories=ServiceCategory.objects.all()
@@ -82,11 +81,17 @@ class GetGoodExpertsNearMeAPIView(ListAPIView):
             sorted_results = sorted(unsorted_results, key= lambda t: (t.distancetopoint(long=long,lat=lat),t.averagescore))
             sorted_results=sorted_results[:10]
             return sorted_results
+    def list(self, request, *args, **kwargs):
+        if self.request.user.is_regular:
+            self.serializer_class = self.serializers_classes[0]
+            return super().list(request, *args, **kwargs)
+
+        self.serializer_class = self.serializers_classes[1]
+        return super().list(request, *args, **kwargs)
 
 class SearchAPIView(ListAPIView):
     permission_classes=[AllowAny]
-    serializer_class   = SerializerExpertSimpleInfo
-
+    serializers_classes=(SerializerExpertSimpleInfoF,SerializerExpertSimpleInfo)
     def get_queryset(self):
         q=self.request.GET.get('q','')
         cats=self.request.GET.getlist("categories",'')
@@ -95,3 +100,11 @@ class SearchAPIView(ListAPIView):
             categories=ServiceCategory.objects.filter(name__in=cats)
         results = Expert.objects.filter(category__in=categories,companyname__icontains=q)
         return results
+
+    def list(self, request, *args, **kwargs):
+        if self.request.user.is_regular:
+            self.serializer_class = self.serializers_classes[0]
+            return super().list(request, *args, **kwargs)
+
+        self.serializer_class = self.serializers_classes[1]
+        return super().list(request, *args, **kwargs)

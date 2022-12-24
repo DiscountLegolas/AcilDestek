@@ -8,7 +8,7 @@ from datetime import datetime
 
 class ExpertReview(models.Model):
     rate = models.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(5.0)],verbose_name="puanlama")
-    expert = models.ForeignKey(Expert, on_delete=models.CASCADE,verbose_name="Yorum Yapılan Usta",related_name="Expert")
+    expert = models.ForeignKey(Expert, on_delete=models.CASCADE,verbose_name="Yorum Yapılan Usta",related_name="reviews")
     text = models.CharField(max_length=200,default="SomeText",verbose_name="Yorum Yazısı")
     user = models.ForeignKey(PersonalAccount, on_delete=models.SET_NULL,null=True,verbose_name="Yorumu Atan Müşteri")
     createdDate = models.DateTimeField(default=datetime.now,verbose_name="Oluşturulma Tarihi")

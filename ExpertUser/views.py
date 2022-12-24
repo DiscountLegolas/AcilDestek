@@ -21,9 +21,18 @@ class UploadExpertPhoto(viewsets.ModelViewSet):
 
 class ExpertUserProfileAPIView(ListAPIView):
     permission_classes=[AllowAny]
-    serializer_class   = SerializerExpertProfile
+    serializers_classes=(SerializerExpertProfileF,SerializerExpertProfile)
     def get_queryset(self):
         return Expert.objects.filter(user__id=self.kwargs.get("id"))
+
+    
+    def list(self, request, *args, **kwargs):
+        if self.request.user.is_regular:
+            self.serializer_class = self.serializers_classes[0]
+            return super().list(request, *args, **kwargs)
+
+        self.serializer_class = self.serializers_classes[1]
+        return super().list(request, *args, **kwargs)
 
 class ExpertUserRegisterAPIView(CreateAPIView):
     permission_classes=[AllowAny]

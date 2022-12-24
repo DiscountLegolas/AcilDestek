@@ -4,7 +4,7 @@ from ExpertUser.models import Expert
 # Create your models here.
 
 class UserFavExpert(models.Model):
-    user = models.ForeignKey(BaseUser,on_delete=models.CASCADE,default=1)
+    user = models.ForeignKey(BaseUser,on_delete=models.CASCADE,default=1,related_name="favorites")
     expert = models.ForeignKey(Expert,on_delete=models.CASCADE,default=1)
 
     class Meta:
