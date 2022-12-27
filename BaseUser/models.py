@@ -1,9 +1,7 @@
 from django.db import models
-
 from time import timezone
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from Category.models import ServiceCategory
 from django.contrib.auth.base_user import BaseUserManager
 from django.utils.encoding import force_bytes
 from .tokens import account_activation_token  

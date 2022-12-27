@@ -10,5 +10,6 @@ urlpatterns = [
         re_path(r'^search/$',SearchAPIView.as_view(),name="url_search"),
         path("",PasswordReset.as_view(),name="request-password-reset",),
         path("profiles",ProfileGetAPIView.as_view(),name="profile",),
-        path("password-reset/<str:encoded_pk>/<str:token>/",ResetPasswordAPI.as_view(),name="reset-password",),
+        path("password-reset/",PasswordReset.as_view(),name="reset-password",),
+        path("password-reset/<str:encoded_pk>/<str:token>/",ResetPasswordAPI.as_view(),name="reset-password_reset",),
 ]

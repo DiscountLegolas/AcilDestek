@@ -1,7 +1,12 @@
+from django.views.decorators.vary import vary_on_headers
+from django.views.decorators.cache import cache_page
 import decimal
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string  
+from django.utils.decorators import method_decorator
 from django.urls import reverse
 from django.contrib.auth.models import User
-from rest_framework import generics, status, viewsets, response
+from rest_framework import generics, status, response
 from django.http import HttpResponse  
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.http import  urlsafe_base64_decode,urlsafe_base64_encode
@@ -84,6 +89,8 @@ class GetGoodExpertsNearMeAPIView(ListAPIView):
             sorted_results = sorted(unsorted_results, key= lambda t: (t.distancetopoint(long=long,lat=lat),t.averagescore))
             sorted_results=sorted_results[:10]
             return sorted_results
+    @method_decorator(cache_page(60*60*2))
+    @method_decorator(vary_on_headers("Authorization",))
     def list(self, request, *args, **kwargs):
         if self.request.user.is_anonymous:
             self.serializer_class = self.serializers_classes[1]
@@ -135,17 +142,27 @@ class PasswordReset(generics.GenericAPIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         email = serializer.data["email"]
-        user = User.objects.filter(email=email).first()
+        user = BaseUser.objects.filter(email=email).first()
         if user:
             encoded_pk = urlsafe_base64_encode(force_bytes(user.pk))
             token = PasswordResetTokenGenerator().make_token(user)
             reset_url = reverse(
-                "reset-password",
+                "baseuser:reset-password_reset",
                 kwargs={"encoded_pk": encoded_pk, "token": token},
             )
-            reset_link = f"localhost:8000{reset_url}"
-
-            # send the rest_link as mail to the user.
+            current_site=self.request.get_host()
+            reset_link = f"{current_site}{reset_url}"
+            print(reset_link)
+            mail_subject = 'Reset Password link has been sent to your email id'  
+            message = render_to_string('password_reset.html', {  
+            'user': user,
+            'resetlink':reset_link
+            })  
+            to_email = user.email
+            email = EmailMessage(  
+                mail_subject, message, to=[to_email]  
+            )  
+            email.send()  
 
             return response.Response(
                 {

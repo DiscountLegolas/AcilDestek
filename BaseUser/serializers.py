@@ -7,7 +7,6 @@ from GuestUser.models import GuestUser
 from Employee.models import Employee
 from rest_framework.validators import UniqueValidator
 from rest_framework import serializers
-from django.contrib.auth.models import User
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.http import urlsafe_base64_decode
 
@@ -99,7 +98,7 @@ class ResetPasswordSerializer(serializers.Serializer):
             raise serializers.ValidationError("Missing data.")
 
         pk = urlsafe_base64_decode(encoded_pk).decode()
-        user = User.objects.get(pk=pk)
+        user = BaseUser.objects.get(pk=pk)
         if not PasswordResetTokenGenerator().check_token(user, token):
             raise serializers.ValidationError("The reset token is invalid")
 
