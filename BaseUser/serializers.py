@@ -4,8 +4,26 @@ from Location.serializers import İlçeSerializer
 from PersonalUser.models import PersonalAccount
 from ExpertUser.models import Expert
 from GuestUser.models import GuestUser
+from Employee.models import Employee
 from rest_framework.validators import UniqueValidator
 from rest_framework import serializers
+from django.contrib.auth.models import User
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.http import urlsafe_base64_decode
+
+
+class ProfileSerializer(serializers.Serializer):
+    profiles=serializers.SerializerMethodField()
+
+    def get_profiles(self, instance):
+        profiles={}
+        
+        user=self.context["request"].user
+        profiles["expert"] =Expert.objects.get(user=user).companyname if Expert.objects.filter(user=user).exists() else None
+        profiles["customer"]= user.first_name if PersonalAccount.objects.filter(user=user).exists() else None
+        profiles["employee"]=user.first_name if Employee.objects.filter(user=user).exists() else None
+        return profiles
+
 
 
 class CallExpertSerializer(serializers.Serializer):
@@ -50,19 +68,41 @@ class BaseUserRegisterSerializer(serializers.ModelSerializer):
         fields= (  "first_name","password","last_name","email","phone","il","ilçe")
 
 
-class ResetPasswordSerializer(serializers.ModelSerializer):
-    email=serializers.CharField(max_length=100)
-    password=serializers.CharField(max_length=100)
+class EmailSerializer(serializers.Serializer):
+
+    email = serializers.EmailField()
+
     class Meta:
-        model=BaseUser
-        fields='__all__'
-    def save(self):
-        email=self.validated_data['email']
-        password=self.validated_data['password']
-        if BaseUser.objects.filter(email=email).exists():
-            user=BaseUser.objects.get(email=email)
-            user.password=make_password(password)
-            user.save()
-            return user
-        else:
-            raise serializers.ValidationError({'error':'please enter valid crendentials'})  
+        fields = ("email",)
+
+
+
+class ResetPasswordSerializer(serializers.Serializer):
+
+    password = serializers.CharField(
+        write_only=True,
+        min_length=1,
+    )
+
+    class Meta:
+        field = ("password")
+
+    def validate(self, data):
+        """
+        Verify token and encoded_pk and then set new password.
+        """
+        password = data.get("password")
+        token = self.context.get("kwargs").get("token")
+        encoded_pk = self.context.get("kwargs").get("encoded_pk")
+
+        if token is None or encoded_pk is None:
+            raise serializers.ValidationError("Missing data.")
+
+        pk = urlsafe_base64_decode(encoded_pk).decode()
+        user = User.objects.get(pk=pk)
+        if not PasswordResetTokenGenerator().check_token(user, token):
+            raise serializers.ValidationError("The reset token is invalid")
+
+        user.set_password(password)
+        user.save()
+        return data

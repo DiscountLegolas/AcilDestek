@@ -1,21 +1,24 @@
 import decimal
+from django.urls import reverse
+from django.contrib.auth.models import User
+from rest_framework import generics, status, viewsets, response
 from django.http import HttpResponse  
-from django.utils.http import  urlsafe_base64_decode
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.http import  urlsafe_base64_decode,urlsafe_base64_encode
 from rest_framework.generics import CreateAPIView,ListAPIView,GenericAPIView
-from BaseUser.serializers import CallExpertSerializer,AccountTypesSerializer
+from BaseUser.serializers import CallExpertSerializer,AccountTypesSerializer,EmailSerializer,ResetPasswordSerializer,ProfileSerializer
 from ExpertUser.serializers import SerializerExpertSimpleInfo,SerializerExpertSimpleInfoF
 from GuestUser.models import GuestUser
 from rest_framework.response import Response
-
+from django.utils.encoding import force_bytes
 from PersonalUser.models import PersonalAccount
 from ExpertUser.models import Expert
 from Category.models import ServiceCategory    
 from BaseUser.models import BaseUser    
 from .tokens import account_activation_token 
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny,IsAuthenticated
 from django.contrib.auth import get_user_model
 from .tokens import account_activation_token 
-from django.contrib.postgres.search import TrigramSimilarity 
 from django.utils.encoding import force_str
 
 def activate(request, uidb64, token):  
@@ -108,3 +111,67 @@ class SearchAPIView(ListAPIView):
 
         self.serializer_class = self.serializers_classes[1]
         return super().list(request, *args, **kwargs)
+
+
+
+class ProfileGetAPIView(ListAPIView):
+    permission_classes=[IsAuthenticated]
+    serializer_class=ProfileSerializer
+
+    
+    def list(self, request, *args, **kwargs):
+        instance = request.user
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
+
+
+class PasswordReset(generics.GenericAPIView):
+
+    serializer_class = EmailSerializer
+
+    def post(self, request):
+
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.data["email"]
+        user = User.objects.filter(email=email).first()
+        if user:
+            encoded_pk = urlsafe_base64_encode(force_bytes(user.pk))
+            token = PasswordResetTokenGenerator().make_token(user)
+            reset_url = reverse(
+                "reset-password",
+                kwargs={"encoded_pk": encoded_pk, "token": token},
+            )
+            reset_link = f"localhost:8000{reset_url}"
+
+            # send the rest_link as mail to the user.
+
+            return response.Response(
+                {
+                    "message": 
+                    f"Your password rest link: {reset_link}"
+                },
+                status=status.HTTP_200_OK,
+            )
+        else:
+            return response.Response(
+                {"message": "User doesn't exists"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+
+class ResetPasswordAPI(generics.GenericAPIView):
+
+    serializer_class = ResetPasswordSerializer
+
+    def patch(self, request, *args, **kwargs):
+
+        serializer = self.serializer_class(
+            data=request.data, context={"kwargs": kwargs}
+        )
+        serializer.is_valid(raise_exception=True)
+        return response.Response(
+            {"message": "Password reset complete"},
+            status=status.HTTP_200_OK,
+        )

@@ -26,7 +26,7 @@ WEEKDAYS = [
 
 
 class Expert(models.Model):
-    user = models.OneToOneField(BaseUser, on_delete=models.CASCADE, primary_key=True)
+    user = models.OneToOneField(BaseUser, on_delete=models.CASCADE, primary_key=True,related_name="expertprofile")
     description=models.TextField(verbose_name="Açıklama",null=True)
     companyname=models.CharField(max_length=50,verbose_name="İşyeri İsmi",null=True)
     long = models.DecimalField(max_digits=9, decimal_places=6,default=1.0)

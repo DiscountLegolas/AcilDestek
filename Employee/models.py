@@ -5,8 +5,8 @@ from ExpertUser.models import *
 
 class Employee(models.Model):
 
-    user = models.OneToOneField(BaseUser, on_delete=models.CASCADE, primary_key=True)
-    employer=models.ForeignKey(Expert, on_delete=models.SET_NULL,null=True)
+    user = models.OneToOneField(BaseUser, on_delete=models.CASCADE, primary_key=True,related_name="emloyeeprofile")
+    employer=models.ForeignKey(Expert, on_delete=models.SET_NULL,null=True,related_name="employees")
 
     class Meta:
         verbose_name        = "Employee"
