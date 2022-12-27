@@ -85,11 +85,11 @@ class GetGoodExpertsNearMeAPIView(ListAPIView):
             sorted_results=sorted_results[:10]
             return sorted_results
     def list(self, request, *args, **kwargs):
-        if self.request.user.is_regular:
-            self.serializer_class = self.serializers_classes[0]
+        if self.request.user.is_anonymous:
+            self.serializer_class = self.serializers_classes[1]
             return super().list(request, *args, **kwargs)
 
-        self.serializer_class = self.serializers_classes[1]
+        self.serializer_class = self.serializers_classes[0]
         return super().list(request, *args, **kwargs)
 
 class SearchAPIView(ListAPIView):
@@ -105,11 +105,11 @@ class SearchAPIView(ListAPIView):
         return results
 
     def list(self, request, *args, **kwargs):
-        if self.request.user.is_regular:
-            self.serializer_class = self.serializers_classes[0]
+        if self.request.user.is_anonymous:
+            self.serializer_class = self.serializers_classes[1]
             return super().list(request, *args, **kwargs)
 
-        self.serializer_class = self.serializers_classes[1]
+        self.serializer_class = self.serializers_classes[0]
         return super().list(request, *args, **kwargs)
 
 
