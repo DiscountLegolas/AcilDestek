@@ -1,21 +1,18 @@
 from django.views.decorators.vary import vary_on_headers
 from django.views.decorators.cache import cache_page
 import decimal
+import random
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string  
 from django.utils.decorators import method_decorator
-from django.urls import reverse
-from django.contrib.auth.models import User
 from rest_framework import generics, status, response
 from django.http import HttpResponse  
-from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.http import  urlsafe_base64_decode,urlsafe_base64_encode
 from rest_framework.generics import CreateAPIView,ListAPIView,GenericAPIView
-from BaseUser.serializers import CallExpertSerializer,AccountTypesSerializer,EmailSerializer,ResetPasswordSerializer,ProfileSerializer
+from BaseUser.serializers import CallExpertSerializer,AccountTypesSerializer,EmailSerializer,ResetPasswordSerializer,ProfileSerializer,OtpEmailSerializer
 from ExpertUser.serializers import SerializerExpertSimpleInfo,SerializerExpertSimpleInfoF
 from GuestUser.models import GuestUser
 from rest_framework.response import Response
-from django.utils.encoding import force_bytes
 from PersonalUser.models import PersonalAccount
 from ExpertUser.models import Expert
 from Category.models import ServiceCategory    
@@ -144,19 +141,19 @@ class PasswordReset(generics.GenericAPIView):
         email = serializer.data["email"]
         user = BaseUser.objects.filter(email=email).first()
         if user:
-            encoded_pk = urlsafe_base64_encode(force_bytes(user.pk))
-            token = PasswordResetTokenGenerator().make_token(user)
-            reset_url = reverse(
-                "baseuser:reset-password_reset",
-                kwargs={"encoded_pk": encoded_pk, "token": token},
-            )
-            current_site=self.request.get_host()
-            reset_link = f"{current_site}{reset_url}"
-            print(reset_link)
-            mail_subject = 'Reset Password link has been sent to your email id'  
+            number_list = [x for x in range(10)]  # Use of list comprehension
+            code_items_for_otp = []
+            for i in range(6):
+                num = random.choice(number_list)
+                code_items_for_otp.append(num)
+
+            code_string = "".join(str(item) for item in code_items_for_otp)
+            user.otp=code_string
+            user.save()
+            mail_subject = 'Reset Password Code has been sent to your email id'  
             message = render_to_string('password_reset.html', {  
             'user': user,
-            'resetlink':reset_link
+            'resetcode':code_string
             })  
             to_email = user.email
             email = EmailMessage(  
@@ -167,7 +164,7 @@ class PasswordReset(generics.GenericAPIView):
             return response.Response(
                 {
                     "message": 
-                    f"Your password rest link: {reset_link}"
+                    f"Your Code: Has Been Sent"
                 },
                 status=status.HTTP_200_OK,
             )
@@ -176,6 +173,25 @@ class PasswordReset(generics.GenericAPIView):
                 {"message": "User doesn't exists"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+
+class VerifyOtp(generics.GenericAPIView):
+
+    serializer_class = OtpEmailSerializer
+
+    def post(self, request):
+
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.data["email"]
+        iscorrect = BaseUser.objects.filter(email=email,otp=serializer.data["otp"]).exists()
+
+        return response.Response(
+            {
+                "otpcorrect":iscorrect
+            },
+            status=status.HTTP_200_OK,
+        )
 
 
 class ResetPasswordAPI(generics.GenericAPIView):

@@ -75,6 +75,15 @@ class EmailSerializer(serializers.Serializer):
         fields = ("email",)
 
 
+class OtpEmailSerializer(serializers.Serializer):
+
+    email = serializers.EmailField()
+    otp = serializers.CharField(max_length=6)
+
+    class Meta:
+        fields = ("email",)
+
+
 
 class ResetPasswordSerializer(serializers.Serializer):
 

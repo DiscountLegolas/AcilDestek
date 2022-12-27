@@ -53,7 +53,7 @@ class BaseUser(AbstractUser):
         regex=r'^(05)\d{9}$',
         message=phone_message
     )
-
+    otp = models.CharField(max_length=6, null=True, blank=True)
     objects = CustomUserManager()
     email = models.EmailField(_('email address'), unique=True)
     username=None
