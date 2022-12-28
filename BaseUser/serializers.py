@@ -51,6 +51,7 @@ class BaseUserSerializer(serializers.ModelSerializer):
 
 class AccountTypesSerializer(serializers.Serializer):
     emailistaken=serializers.BooleanField()
+    emailisvalid=serializers.BooleanField()
     expertprofileexists=serializers.BooleanField()
     customerprofileexists=serializers.BooleanField()
     employeeprofileexists=serializers.BooleanField()

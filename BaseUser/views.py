@@ -1,7 +1,6 @@
 from django.views.decorators.vary import vary_on_headers
 from django.views.decorators.cache import cache_page
-import decimal
-import random
+import decimal,re,random
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string  
 from django.utils.decorators import method_decorator
@@ -50,19 +49,16 @@ class CallExpertCreateApiView(CreateAPIView):
 class AccountTypesView(GenericAPIView):
     permission_classes=[AllowAny]
     def get(self, request):
-        emailistaken=True if BaseUser.objects.filter(email=self.request.GET.get("email")).exists() else False
+        regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+        emailisvalid=True if re.fullmatch(regex, self.request.GET.get("email")) else False
+        emailistaken= BaseUser.objects.filter(email=self.request.GET.get("email")).exists()
         if BaseUser.objects.filter(email=self.request.GET.get("email")).exists()==False:
-            emailistaken=False
-            expertprofileexists=False
-            customerprofileexists=False
-            employeeprofileexists=False
-            datatoserialize={"emailistaken":emailistaken,"expertprofileexists":expertprofileexists,"customerprofileexists":customerprofileexists,"employeeprofileexists":employeeprofileexists}
+            datatoserialize={"emailistaken":emailistaken,"emailisvalid":emailisvalid,"expertprofileexists":False,"customerprofileexists":False,"employeeprofileexists":False}
             serializer = AccountTypesSerializer(datatoserialize)
             return Response(serializer.data)
         else:
-            emailistaken=True
             user=BaseUser.objects.filter(email=self.request.GET.get("email")).first()
-            datatoserialize={"emailistaken":emailistaken,"expertprofileexists":user.is_expert,"customerprofileexists":user.is_regular,"employeeprofileexists":user.is_employee}
+            datatoserialize={"emailistaken":emailistaken,"emailisvalid":emailisvalid,"expertprofileexists":user.is_expert,"customerprofileexists":user.is_regular,"employeeprofileexists":user.is_employee}
             serializer = AccountTypesSerializer(datatoserialize)
             return Response(serializer.data)
 
