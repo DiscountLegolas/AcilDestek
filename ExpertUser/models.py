@@ -3,7 +3,6 @@ from email.policy import default
 import math
 from django.db import models
 import uuid
-from Category.models import ServiceCategory
 from django.contrib.postgres.indexes import GinIndex
 import json
 import datetime

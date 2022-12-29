@@ -103,7 +103,8 @@ class SerializerExpertProfile(serializers.ModelSerializer):
     expertimages=ExpertImageSerializer(many=True)
 
     def get_reviews(self,obj):
-        return obj.reviews
+        newarr = [{'created_date': i.createdDate,'text':i.text,'rate':i.rate,'fullname':i.customernamesurname} for i in ExpertReview.objects.filter(expert__user__id=self.context['view'].kwargs.get("id"), user__isnull=False)]
+        return newarr
 
     
     user=BaseUserSerializer()
@@ -118,7 +119,8 @@ class SerializerExpertProfileF(serializers.ModelSerializer):
     isaddedtofavorites=serializers.SerializerMethodField()
 
     def get_reviews(self,obj):
-        return obj.reviews
+        newarr = [{'created_date': i.createdDate,'text':i.text,'rate':i.rate,'fullname':i.customernamesurname} for i in ExpertReview.objects.filter(expert__user__id=self.context['view'].kwargs.get("id"), user__isnull=False)]
+        return newarr
 
     def get_isaddedtofavorites(self,obj):
         return self.context["request"].user.favorites.filter(expert=obj).exists()
