@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import ExpertUserProfileAPIView,ExpertUserRegisterAPIView,OpeningHoursCreateApiView,OpeningHoursUpdateApiView,UploadExpertPhoto,CategoriesSetApiView
+from .views import ExpertUserProfileAPIView,ExpertUserRegisterAPIView,OpeningHoursCreateApiView,OpeningHoursUpdateApiView,UploadExpertPhoto,CategorySetApiView
 from PersonalUser import views
 from rest_framework.routers import DefaultRouter
 openinghoursupdate = OpeningHoursUpdateApiView.as_view({
@@ -15,6 +15,6 @@ urlpatterns = [
     path("profile/addhours/",OpeningHoursCreateApiView.as_view()),
     path("profile/updatehours/",openinghoursupdate),   
     path("profile/uploadphotos/",uploadphotos),
-    path("profile/setcategories/",CategoriesSetApiView.as_view()),
+    path("profile/setcategory/",CategorySetApiView.as_view()),
 
 ]

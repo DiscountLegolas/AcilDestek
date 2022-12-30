@@ -57,23 +57,9 @@ class CreateOpeningHoursSerializer(serializers.Serializer):
             OpeningHours.objects.create(company=Expert.objects.get(user=self.context["request"].user),**openinghour)
         return Response(data=self.data)
 
-class AddCategoriesSerializer(serializers.Serializer):
-    categories = serializers.ListField(child=serializers.CharField())
-    responselist=serializers.SerializerMethodField()
+class SelectCategorySerializer(serializers.Serializer):
+    category = serializers.CharField()
 
-    def get_responselist(self,obj):
-        expert=Expert.objects.get(user=self.context["request"].user)
-        ohlist=expert.categories.values('name')
-        return ohlist
-
-
-    def create(self, validated_data):
-        expert=Expert.objects.get(user=self.context["request"].user)
-        expert.categories.clear()
-        for category in validated_data['categories']:
-            expert.categories.add(ServiceCategory.objects.get(name=category))
-            expert.save()
-        return Response(data=self.data)
                 
 class UpdateOpeningHoursSerializer(serializers.Serializer):
     openinghours = OpeningHoursSerializer(many=True,write_only=True)

@@ -7,7 +7,7 @@ from rest_framework.mixins import CreateModelMixin
 from django.contrib.auth.tokens import default_token_generator
 from rest_framework.generics import ListAPIView,CreateAPIView,UpdateAPIView
 from rest_framework import viewsets
-from rest_framework import generics
+from rest_framework import generics,status
 
 from rest_framework.parsers import *
 
@@ -39,10 +39,22 @@ class ExpertUserRegisterAPIView(CreateAPIView):
     serializer_class = RegisterExpertSerializer
     queryset = Expert.objects.all()
 
-class CategoriesSetApiView(CreateAPIView):
+class CategorySetApiView(generics.GenericAPIView):
     permission_classes=[IsAuthenticated,IsExpert]
-    serializer_class = AddCategoriesSerializer
-    queryset=ServiceCategory.objects.all()
+    serializer_class = SelectCategorySerializer
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        expert=Expert.objects.get(user=self.request.user)
+        expert.category=ServiceCategory.objects.get(name=serializer.data["category"])
+        expert.save()
+        return Response(
+                {
+                    "message": 
+                    f"Your Category Is Now {expert.category.name}"
+                },
+                status=status.HTTP_200_OK,
+            )
 
 
 class OpeningHoursCreateApiView(CreateAPIView):
