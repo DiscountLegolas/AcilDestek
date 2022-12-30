@@ -77,7 +77,7 @@ class GetGoodExpertsNearMeAPIView(ListAPIView):
             sorted_results=sorted_results[:10]
             return sorted_results
         elif self.request.user.is_regular:
-            qs = Expert.objects.filter(user__il=self.request.user.il,user__ilçe=self.request.user.ilçe,category__in=categories)
+            qs = Expert.objects.filter(category__in=categories)
             unsorted_results = qs.all()
             sorted_results = sorted(unsorted_results, key= lambda t: (t.distancetopoint(long=long,lat=lat),t.averagescore))
             sorted_results=sorted_results[:10]
