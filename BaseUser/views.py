@@ -62,6 +62,7 @@ class AccountTypesView(GenericAPIView):
             serializer = AccountTypesSerializer(datatoserialize)
             return Response(serializer.data)
 
+@method_decorator(cache_page(60*60*2))
 class GetGoodExpertsNearMeAPIView(ListAPIView):
     permission_classes=[AllowAny]
     serializers_classes=(SerializerExpertSimpleInfoF,SerializerExpertSimpleInfo)
@@ -92,6 +93,7 @@ class GetGoodExpertsNearMeAPIView(ListAPIView):
         self.serializer_class = self.serializers_classes[0]
         return super().list(request, *args, **kwargs)
 
+@method_decorator(cache_page(60*60*2))
 class SearchAPIView(ListAPIView):
     permission_classes=[AllowAny]
     serializers_classes=(SerializerExpertSimpleInfoF,SerializerExpertSimpleInfo)
@@ -113,7 +115,7 @@ class SearchAPIView(ListAPIView):
         return super().list(request, *args, **kwargs)
 
 
-
+@method_decorator(cache_page(60*60*2))
 class ProfileGetAPIView(ListAPIView):
     permission_classes=[IsAuthenticated]
     serializer_class=ProfileSerializer
