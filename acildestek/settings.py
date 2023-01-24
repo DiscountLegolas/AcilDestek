@@ -99,9 +99,9 @@ WSGI_APPLICATION = 'acildestek.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME':'d5to1q2ltipgfo',
-        'USER':'igvljvrmbzjrpl',
-        'PASSWORD': '9de9adb51ccca8b379b4db4584ed18c445a71f3e358d051e7cc68f06e6d612d8',
+        'NAME':'daqtu308c9ghc8',
+        'USER':'pkzwcnazmcsqib',
+        'PASSWORD': '2ee6d4663ccb1b74bbe2084adefe86e5f53ff96e4a62a64ef85239b3eccc809b',
         'HOST': 'ec2-52-3-60-53.compute-1.amazonaws.com',
         'PORT': '5432',
     }
