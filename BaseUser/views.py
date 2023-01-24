@@ -62,7 +62,6 @@ class AccountTypesView(GenericAPIView):
             serializer = AccountTypesSerializer(datatoserialize)
             return Response(serializer.data)
 
-@method_decorator(cache_page(60*60*2))
 class GetGoodExpertsNearMeAPIView(ListAPIView):
     permission_classes=[AllowAny]
     serializers_classes=(SerializerExpertSimpleInfoF,SerializerExpertSimpleInfo)
@@ -93,7 +92,7 @@ class GetGoodExpertsNearMeAPIView(ListAPIView):
         self.serializer_class = self.serializers_classes[0]
         return super().list(request, *args, **kwargs)
 
-@method_decorator(cache_page(60*60*2))
+
 class SearchAPIView(ListAPIView):
     permission_classes=[AllowAny]
     serializers_classes=(SerializerExpertSimpleInfoF,SerializerExpertSimpleInfo)
@@ -106,6 +105,7 @@ class SearchAPIView(ListAPIView):
         results = Expert.objects.filter(category__in=categories,companyname__icontains=q)
         return results
 
+    @method_decorator(cache_page(60*60*2))
     def list(self, request, *args, **kwargs):
         if self.request.user.is_anonymous:
             self.serializer_class = self.serializers_classes[1]
@@ -115,12 +115,12 @@ class SearchAPIView(ListAPIView):
         return super().list(request, *args, **kwargs)
 
 
-@method_decorator(cache_page(60*60*2))
 class ProfileGetAPIView(ListAPIView):
     permission_classes=[IsAuthenticated]
     serializer_class=ProfileSerializer
 
-    
+    @method_decorator(cache_page(60*60*2))
+    @method_decorator(vary_on_headers("Authorization",))
     def list(self, request, *args, **kwargs):
         instance = request.user
         serializer = self.get_serializer(instance)
