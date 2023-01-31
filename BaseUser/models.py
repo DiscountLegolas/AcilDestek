@@ -81,7 +81,6 @@ class BaseUser(AbstractUser):
                 mail_subject, message, to=[to_email]  
         )  
         email.send()  
-
     phone = models.CharField(validators=[phone_regex], max_length=60,null=True, blank=True)
     il=models.ForeignKey(İl,on_delete=models.SET_NULL,null=True)
     ilçe=models.ForeignKey(İlçe,on_delete=models.SET_NULL,null=True)
