@@ -60,6 +60,8 @@ class BaseUser(AbstractUser):
     username=None
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS=[]
+    password=models.CharField(max_length=128 ,null=True)
+
 
     def how_many_days(self):
         return (timezone.now()-self.date_joined).days
