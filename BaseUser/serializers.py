@@ -76,6 +76,7 @@ class BaseUserRegisterSerializer(serializers.ModelSerializer):
             il=İl.objects.get(name=il),
             ilçe=İlçe.objects.get(name=ilçe)
         )
+        user.is_active=False
         user.sendactivationmail(self.context['site'])
         return user
     class Meta:

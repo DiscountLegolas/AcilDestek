@@ -36,6 +36,7 @@ class RegisterUserSerializer(serializers.ModelSerializer):
         }
     def create(self, validated_data):
         user=None
+        pw=validated_data['password']
         if BaseUser.objects.filter(email=validated_data['email'],is_regular=True).exists():
             raise serializers.ValidationError("An Customer With This Email Already exists you can try to create different account types")
         elif BaseUser.objects.filter(email=validated_data['email']).exists()==False:
@@ -44,7 +45,7 @@ class RegisterUserSerializer(serializers.ModelSerializer):
         user=BaseUser.objects.filter(email=validated_data['email']).first() if user is None else user
         user.is_regular=True
         user.save()
-        personaluser=PersonalAccount.objects.create(user=user)
+        personaluser=PersonalAccount.objects.create(user=user,password=make_password(pw))
         return user
 
 

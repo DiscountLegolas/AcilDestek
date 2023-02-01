@@ -114,6 +114,7 @@ class RegisterExpertSerializer(serializers.ModelSerializer):
         wh=validated_data.pop("workinghours",None)
         cat=validated_data.pop("category",None)
         userdict=validated_data.pop("user",None)
+        pw=userdict['password']
         if BaseUser.objects.filter(email=userdict['email'],is_expert=True).exists():
             raise serializers.ValidationError("An Expert With This Email Already exists you can try to create different account types")
         elif BaseUser.objects.filter(email=userdict['email']).exists()==False:
@@ -121,7 +122,7 @@ class RegisterExpertSerializer(serializers.ModelSerializer):
             user=baseuserserializer.create(userdict)
         user=BaseUser.objects.filter(email=userdict['email']).first() if user is None else user
         user.is_expert=True
-        expert=Expert.objects.create(user=user,password=make_password(userdict["password"]),category=ServiceCategory.objects.get(name=cat) if "category" in validated_data else None,**validated_data)
+        expert=Expert.objects.create(user=user,password=make_password(pw),category=ServiceCategory.objects.get(name=cat) if "category" in validated_data else None,**validated_data)
         for openinghour in wh:
             OpeningHours.objects.create(company=Expert.objects.get(user=self.context["request"].user),**openinghour)
         return expert
