@@ -5,6 +5,9 @@ pycache/
 # C extensions
 *.so
 
+#dotenv
+.env
+
 # Distribution / packaging
 bin/
 build/
@@ -49,5 +52,3 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 
-#dotnev
-.env
