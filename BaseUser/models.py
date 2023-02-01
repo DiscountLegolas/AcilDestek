@@ -60,7 +60,7 @@ class BaseUser(AbstractUser):
     username=None
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS=[]
-    password=models.CharField(max_length=128 ,null=True)
+    password=models.CharField(max_length=128 ,null=True,blank=True)
 
 
     def how_many_days(self):
