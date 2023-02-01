@@ -1,3 +1,5 @@
+from django.contrib.sites.shortcuts import get_current_site
+from Location.models import İl,İlçe
 from .models import BaseUser
 from django.contrib.auth.hashers import make_password
 from Location.serializers import İlçeSerializer
@@ -63,9 +65,23 @@ class BaseUserRegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True)
     il=serializers.CharField(required=True)
     ilçe=serializers.CharField(required=True)
+
+    def create(self, validated_data,):
+        passw=validated_data.pop("password",None)
+        il=validated_data.pop("il",None)
+        ilçe=validated_data.pop("ilçe",None)
+        user=BaseUser.objects.create(
+            **validated_data,
+            is_expert=True,
+            il=İl.objects.get(name=il),
+            ilçe=İlçe.objects.get(name=ilçe)
+        )
+        user.sendactivationmail(self.context['site'])
+        return user
     class Meta:
         model = BaseUser
-        fields= (  "first_name","password","last_name","email","phone","il","ilçe")
+        fields= (  "first_name","last_name","email","phone","il","ilçe","password")
+
 
 
 class EmailSerializer(serializers.Serializer):

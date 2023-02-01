@@ -32,7 +32,7 @@ class Expert(models.Model):
     long = models.DecimalField(max_digits=9, decimal_places=6,default=1.0)
     lat  =  models.DecimalField(max_digits=9, decimal_places=6,default=1.0)
     category=models.ForeignKey(ServiceCategory,verbose_name="Kategorisi",on_delete=models.SET_NULL,null=True)
-
+    password=models.TextField(verbose_name="Şifre",default="pbkdf2_sha256$390000$aFPItBeusjwW6y5YrbOSwY$bpQAkv4VVQBG5W+bc3pK2ybUHvmBBXvso7odOh5p4Sg=")
 
     @property
     def averagescore(self):

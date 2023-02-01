@@ -39,28 +39,7 @@ class ExpertUserRegisterAPIView(CreateAPIView):
     serializer_class = RegisterExpertSerializer
     queryset = Expert.objects.all()
 
-class CategorySetApiView(generics.GenericAPIView):
-    permission_classes=[IsAuthenticated,IsExpert]
-    serializer_class = SelectCategorySerializer
-    def post(self, request):
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        expert=Expert.objects.get(user=self.request.user)
-        expert.category=ServiceCategory.objects.get(name=serializer.data["category"])
-        expert.save()
-        return Response(
-                {
-                    "message": 
-                    f"Your Category Is Now {expert.category.name}"
-                },
-                status=status.HTTP_200_OK,
-            )
 
-
-class OpeningHoursCreateApiView(CreateAPIView):
-    permission_classes=[IsAuthenticated,IsExpert]
-    serializer_class = CreateOpeningHoursSerializer
-    queryset=OpeningHours.objects.all()
 
 
 class OpeningHoursUpdateApiView(CreateModelMixin,viewsets.GenericViewSet):

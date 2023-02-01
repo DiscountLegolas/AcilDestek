@@ -18,9 +18,13 @@ from rest_framework.exceptions import AuthenticationFailed
 from django.contrib import admin
 from django.urls import path,include
 from django.conf.urls.static import static
-from django.conf import settings  
+from django.conf import settings 
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+from ExpertUser.models import Expert
+from PersonalUser.models import PersonalAccount
+from Employee.models import Employee
+
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import  get_user_model
@@ -34,25 +38,42 @@ class CustomJWTSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         credentials = {
             'email_or_phone': '',
-            'password': attrs.get("password")
+            'password': attrs.get("password"),
+            'usertype':''
         }
-
         default_error_messages = {
-            'no_active_account': _('No active account found with the given credentials')
+            'no_active_account': _('No active account found with the given credentials'),
+            'expertaccountfalse': _('e-mail or password invalid for ExpertUser'),
+            'personalaccountfalse': _('e-mail or password invalid for PersonalAccount'),
+            'employeeaccountfalse': _('e-mail or password invalid for EmployeeAccount')
         }
-
         user_obj = User.objects.filter(email=attrs.get("email_or_phone")).first() or User.objects.filter(phone=attrs.get("email_or_phone")).first()
         if user_obj:
-            if check_password(attrs.get("password"), user_obj.password):
-                refresh = RefreshToken.for_user(user_obj)
-                return {
-                    'access': str(refresh.access_token),
-                    'refresh': str(refresh),
-                    }
-            else:
-                raise AuthenticationFailed(
-                self.error_messages['no_active_account'],
-                'no_active_account',)
+            match int(attrs.get("usertype")):
+                case 1:
+                    if check_password(attrs.get("password"), Expert.objects.get(user=user_obj).password)==False:
+                        raise AuthenticationFailed(
+                        self.error_messages['expertaccountfalse'],
+                            'expertaccountfalse',)
+                case 2:
+                    if check_password(attrs.get("password"), PersonalAccount.objects.get(user=user_obj).password)==False:
+                        raise AuthenticationFailed(
+                        self.error_messages['personalaccountfalse'],
+                            'personalaccountfalse',)
+                case 3:
+                        if check_password(attrs.get("password"), PersonalAccount.objects.get(user=user_obj).password)==False:
+                            raise AuthenticationFailed(
+                            self.error_messages['employeeaccountfalse'],
+                                'employeeaccountfalse',)
+                case default:
+                    return "something"
+                            
+            refresh = RefreshToken.for_user(user_obj)
+            refresh['usertype'] = int(attrs.get("usertype"))
+            return {
+                'access': str(refresh.access_token),
+                'refresh': str(refresh),
+                }
             
         else:
             raise AuthenticationFailed(

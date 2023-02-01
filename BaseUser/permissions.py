@@ -4,6 +4,8 @@ class IsExpert(BasePermission):
     message = "You must be an Expert for any process"
 
     def has_object_permission(self, request, view, obj):
+        print(type(request.auth.key))
+        print((request.auth.key))
         return request.user.is_expert
 
 

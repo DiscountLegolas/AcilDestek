@@ -39,21 +39,11 @@ class RegisterUserSerializer(serializers.ModelSerializer):
         if BaseUser.objects.filter(email=validated_data['email'],is_regular=True).exists():
             raise serializers.ValidationError("An Customer With This Email Already exists you can try to create different account types")
         elif BaseUser.objects.filter(email=validated_data['email']).exists()==False:
-            user=BaseUser.objects.create(
-                first_name   = validated_data['first_name'],
-                password=make_password(validated_data['password']),
-                email      = validated_data['email'],
-                last_name  = validated_data['last_name'],
-                phone=validated_data['phone'],
-                is_regular=True,
-                il=İl.objects.get(name=validated_data['il']),
-                ilçe=İlçe.objects.get(name=validated_data['ilçe'])
-            )
-            user.sendactivationmail(get_current_site(self.context['request']))
+            baseuserserializer = BaseUserRegisterSerializer(context={'site': get_current_site(self.context['request'])})
+            user=baseuserserializer.create(validated_data)
         user=BaseUser.objects.filter(email=validated_data['email']).first() if user is None else user
         user.is_regular=True
         user.save()
-        user.sendactivationmail(get_current_site(self.context['request']))
         personaluser=PersonalAccount.objects.create(user=user)
         return user
 

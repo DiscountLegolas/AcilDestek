@@ -20,11 +20,8 @@ class ExpertImageSerializer(serializers.ModelSerializer):
 
 
 class ImageListSerializer ( serializers.Serializer ) :
-    image = serializers.ListField(
-                       child=serializers.FileField( max_length=100000,
-                                         allow_empty_file=False,
-                                         use_url=False ),write_only=True
-                                )
+    image = serializers.ListField(child=serializers.FileField( max_length=100000,allow_empty_file=False,use_url=False ),write_only=True)
+
     def create(self, validated_data):
         image=validated_data.pop('image')
         for img in image:
@@ -41,24 +38,6 @@ class OpeningHoursSerializer(serializers.ModelSerializer):
                 'to_hour',
                 'is_closed'
             )
-
-
-class CreateOpeningHoursSerializer(serializers.Serializer):
-    openinghours = OpeningHoursSerializer(many=True,write_only=True)
-    responselist=serializers.SerializerMethodField()
-
-    def get_responselist(self,obj):
-        ohlist=OpeningHours.objects.filter(company=Expert.objects.get(user=self.context["request"].user)).values('weekday','from_hour','to_hour','is_closed')
-        return ohlist
-
-
-    def create(self, validated_data):
-        for openinghour in validated_data['openinghours']:
-            OpeningHours.objects.create(company=Expert.objects.get(user=self.context["request"].user),**openinghour)
-        return Response(data=self.data)
-
-class SelectCategorySerializer(serializers.Serializer):
-    category = serializers.CharField()
 
                 
 class UpdateOpeningHoursSerializer(serializers.Serializer):
@@ -81,7 +60,6 @@ class UpdateOpeningHoursSerializer(serializers.Serializer):
                 setattr(oh, key, my_data[key])
                     
             oh.save(update_fields=keys)
-        return Response(data=self.data)
 
 
 class SerializerExpertProfile(serializers.ModelSerializer):
@@ -121,34 +99,62 @@ class RegisterExpertSerializer(serializers.ModelSerializer):
     user=BaseUserRegisterSerializer()
     description=serializers.CharField(required=True)
     companyname=serializers.CharField(required=True)
+    category = serializers.CharField(required=False)
     long = serializers.DecimalField(max_digits=9, decimal_places=6)
     lat  =  serializers.DecimalField(max_digits=9, decimal_places=6)
+    workinghours = OpeningHoursSerializer(many=True,write_only=False,default=[])
+
     class Meta:
         model = BaseUser
-        fields = ('user','long',"lat","description","companyname")
+        fields = ('user','long',"lat","description","companyname","workinghours","category")
 
         
     def create(self, validated_data):
         user=None
-        userdict=validated_data["user"]
+        wh=validated_data.pop("workinghours",None)
+        cat=validated_data.pop("category",None)
+        userdict=validated_data.pop("user",None)
         if BaseUser.objects.filter(email=userdict['email'],is_expert=True).exists():
             raise serializers.ValidationError("An Expert With This Email Already exists you can try to create different account types")
         elif BaseUser.objects.filter(email=userdict['email']).exists()==False:
-            user=BaseUser.objects.create(
-                first_name   = userdict['first_name'],
-                password=make_password(userdict['password']),
-                email      = userdict['email'],
-                last_name  = userdict['last_name'],
-                phone=userdict['phone'],
-                is_expert=True,
-                il=İl.objects.get(name=userdict['il']),
-                ilçe=İlçe.objects.get(name=userdict['ilçe'])
-            )
-            user.sendactivationmail(get_current_site(self.context['request']))
-
+            baseuserserializer = BaseUserRegisterSerializer(context={'site': get_current_site(self.context['request'])})
+            user=baseuserserializer.create(userdict)
         user=BaseUser.objects.filter(email=userdict['email']).first() if user is None else user
         user.is_expert=True
-        expert=Expert.objects.create(user=user,long=validated_data['long'],lat=validated_data["lat"],description=validated_data['description'],companyname=validated_data['companyname'])
+        expert=Expert.objects.create(user=user,password=make_password(userdict["password"]),category=ServiceCategory.objects.get(name=cat) if "category" in validated_data else None,**validated_data)
+        for openinghour in wh:
+            OpeningHours.objects.create(company=Expert.objects.get(user=self.context["request"].user),**openinghour)
+        return expert
+
+
+class UpdateExpertSerializer(serializers.ModelSerializer):
+
+    workinghours = OpeningHoursSerializer(many=True,write_only=False,default=[])
+    image = serializers.ListField(child=serializers.FileField( max_length=100000,allow_empty_file=False,use_url=False ),write_only=True,default=[])
+
+    class Meta:
+        model = Expert
+        fields = ('user','long',"lat","description","companyname","category","workinghours","expertimages")
+
+    def update(self,instance,  validated_data):
+        user=self.context["request"].user
+        wh=validated_data.pop("workinghours",None)
+        cat=validated_data.pop("category",None)
+        userdict=validated_data.pop("user",None)
+        user.update(**userdict)
+
+        expert=Expert.objects.update(category=ServiceCategory.objects.get(name=validated_data["category"]) if "category" in validated_data else None,**validated_data)
+        for openinghour in wh:
+            oh=OpeningHours.objects.get(company=Expert.objects.get(user=self.context["request"].user),weekday=openinghour["weekday"])
+            jsonstr=json.dumps(openinghour,cls=DjangoJSONEncoder)
+            my_data =json.loads(jsonstr)
+            keys = list(my_data.keys())
+            for key in keys:
+                setattr(oh, key, my_data[key])        
+            oh.save(update_fields=keys)
+        image=validated_data.pop('image')
+        for img in image:
+            expertimage=ExpertImage.objects.create(image=img,expert=Expert.objects.get(user=user))
         return expert
 
 class SerializerExpertSimpleInfo(serializers.ModelSerializer):

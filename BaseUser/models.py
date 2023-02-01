@@ -29,7 +29,7 @@ class CustomUserManager(BaseUserManager):
             raise ValueError(_('The Email must be set'))
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
-        user.set_password(password)
+        user.set_unusable_password()
         user.save()
         return user
 
@@ -60,6 +60,8 @@ class BaseUser(AbstractUser):
     username=None
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS=[]
+    
+
 
     def how_many_days(self):
         return (timezone.now()-self.date_joined).days
