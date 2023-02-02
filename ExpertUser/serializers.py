@@ -122,7 +122,7 @@ class RegisterExpertSerializer(serializers.ModelSerializer):
             user=baseuserserializer.create(userdict)
         user=BaseUser.objects.filter(email=userdict['email']).first() if user is None else user
         user.is_expert=True
-        expert=Expert.objects.create(user=user,password=make_password(pw),category=ServiceCategory.objects.get(name=cat) if "category" in validated_data else None,**validated_data)
+        expert=Expert.objects.create(user=user,password=make_password(pw),category=ServiceCategory.objects.get(name=cat) if cat is not None else None,**validated_data)
         for openinghour in wh:
             OpeningHours.objects.create(company=Expert.objects.get(user=self.context["request"].user),**openinghour)
         return expert
@@ -130,8 +130,8 @@ class RegisterExpertSerializer(serializers.ModelSerializer):
 
 class UpdateExpertSerializer(serializers.ModelSerializer):
 
+    user=BaseUserUpdateSerializer()
     workinghours = OpeningHoursSerializer(many=True,write_only=False,default=[])
-    image = serializers.ListField(child=serializers.FileField( max_length=100000,allow_empty_file=False,use_url=False ),write_only=True,default=[])
 
     class Meta:
         model = Expert
@@ -142,9 +142,16 @@ class UpdateExpertSerializer(serializers.ModelSerializer):
         wh=validated_data.pop("workinghours",None)
         cat=validated_data.pop("category",None)
         userdict=validated_data.pop("user",None)
-        user.update(**userdict)
-
-        expert=Expert.objects.update(category=ServiceCategory.objects.get(name=validated_data["category"]) if "category" in validated_data else None,**validated_data)
+        expert=Expert.objects.get(user=user)
+        for key,val in userdict.items():
+            setattr(user, key, val)
+        for key,val in validated_data.items():
+            setattr(expert, key, val)
+        if "password" in userdict:
+            expert.password=make_password(userdict['password'])
+        expert.category=ServiceCategory.objects.get(name=cat) if cat is not None else expert.category
+        user.save()
+        expert.save()
         for openinghour in wh:
             oh=OpeningHours.objects.get(company=Expert.objects.get(user=self.context["request"].user),weekday=openinghour["weekday"])
             jsonstr=json.dumps(openinghour,cls=DjangoJSONEncoder)
@@ -153,9 +160,6 @@ class UpdateExpertSerializer(serializers.ModelSerializer):
             for key in keys:
                 setattr(oh, key, my_data[key])        
             oh.save(update_fields=keys)
-        image=validated_data.pop('image')
-        for img in image:
-            expertimage=ExpertImage.objects.create(image=img,expert=Expert.objects.get(user=user))
         return expert
 
 class SerializerExpertSimpleInfo(serializers.ModelSerializer):

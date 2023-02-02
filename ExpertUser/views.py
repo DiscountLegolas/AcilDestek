@@ -40,7 +40,12 @@ class ExpertUserRegisterAPIView(CreateAPIView):
     queryset = Expert.objects.all()
 
 
-
+class ExpertUserUpdateAPIView(UpdateAPIView):
+    permission_classes=[IsAuthenticated,IsExpert]
+    serializer_class = UpdateExpertSerializer
+    queryset = Expert.objects.all()
+    def get_object(self):
+        return Expert.objects.first()
 
 class OpeningHoursUpdateApiView(CreateModelMixin,viewsets.GenericViewSet):
     permission_classes=[IsAuthenticated,IsExpert]

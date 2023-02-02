@@ -24,7 +24,7 @@ from drf_yasg import openapi
 from ExpertUser.models import Expert
 from PersonalUser.models import PersonalAccount
 from Employee.models import Employee
-
+from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import  get_user_model
@@ -32,14 +32,32 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from django.contrib.auth.hashers import check_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 User=get_user_model()
+class PasswordField(serializers.CharField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault('style', {})
+
+        kwargs['style']['input_type'] = 'password'
+        kwargs['write_only'] = True
+
+        super().__init__(*args, **kwargs)
+
+
 class CustomJWTSerializer(TokenObtainPairSerializer):
 
     username_field = 'email_or_phone'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields[self.username_field] = serializers.CharField()
+        self.fields['password'] = PasswordField()
+        self.fields['usertype']=serializers.IntegerField()
+
     def validate(self, attrs):
-        credentials = {
-            'email_or_phone': '',
-            'password': attrs.get("password"),
-            'usertype':''
+        authenticate_kwargs = {
+            self.username_field: attrs[self.username_field],
+            'password': attrs['password'],
+            'usertype':attrs['usertype']
         }
         default_error_messages = {
             'no_active_account': _('No active account found with the given credentials'),

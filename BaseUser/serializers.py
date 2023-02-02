@@ -65,7 +65,6 @@ class BaseUserRegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True)
     il=serializers.CharField(required=True)
     ilçe=serializers.CharField(required=True)
-
     def create(self, validated_data,):
         passw=validated_data.pop("password",None)
         il=validated_data.pop("il",None)
@@ -76,9 +75,21 @@ class BaseUserRegisterSerializer(serializers.ModelSerializer):
             il=İl.objects.get(name=il),
             ilçe=İlçe.objects.get(name=ilçe)
         )
-        user.is_active=False
         user.sendactivationmail(self.context['site'])
         return user
+    class Meta:
+        model = BaseUser
+        fields= (  "first_name","last_name","email","phone","il","ilçe","password")
+
+
+
+class BaseUserUpdateSerializer(serializers.ModelSerializer):
+
+    phone = serializers.CharField(required=False,default="")
+    email = serializers.EmailField(required=False)
+    password = serializers.CharField(write_only=True, required=False)
+    il=serializers.CharField(required=False)
+    ilçe=serializers.CharField(required=False)
     class Meta:
         model = BaseUser
         fields= (  "first_name","last_name","email","phone","il","ilçe","password")

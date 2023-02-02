@@ -61,7 +61,7 @@ class BaseUser(AbstractUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS=[]
     password=models.CharField(max_length=128 ,null=True,blank=True)
-
+    is_active=models.BooleanField(default=False)
 
     def how_many_days(self):
         return (timezone.now()-self.date_joined).days
