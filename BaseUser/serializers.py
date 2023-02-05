@@ -71,7 +71,6 @@ class BaseUserRegisterSerializer(serializers.ModelSerializer):
         ilçe=validated_data.pop("ilçe",None)
         user=BaseUser.objects.create(
             **validated_data,
-            is_expert=True,
             il=İl.objects.get(name=il),
             ilçe=İlçe.objects.get(name=ilçe)
         )

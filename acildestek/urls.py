@@ -18,7 +18,8 @@ from rest_framework.exceptions import AuthenticationFailed
 from django.contrib import admin
 from django.urls import path,include
 from django.conf.urls.static import static
-from django.conf import settings 
+from django.conf import settings
+from BaseUser.models import BaseUser 
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from ExpertUser.models import Expert
@@ -69,23 +70,27 @@ class CustomJWTSerializer(TokenObtainPairSerializer):
         if user_obj:
             match int(attrs.get("usertype")):
                 case 1:
+                    user_obj.role=BaseUser.EXPERT
                     if check_password(attrs.get("password"), Expert.objects.get(user=user_obj).password)==False:
                         raise AuthenticationFailed(
                         self.error_messages['expertaccountfalse'],
                             'expertaccountfalse',)
                 case 2:
+                    user_obj.role=BaseUser.CUSTOMER
                     if check_password(attrs.get("password"), PersonalAccount.objects.get(user=user_obj).password)==False:
                         raise AuthenticationFailed(
                         self.error_messages['personalaccountfalse'],
                             'personalaccountfalse',)
                 case 3:
-                        if check_password(attrs.get("password"), PersonalAccount.objects.get(user=user_obj).password)==False:
-                            raise AuthenticationFailed(
-                            self.error_messages['employeeaccountfalse'],
-                                'employeeaccountfalse',)
+                    user_obj.role=BaseUser.EMPLOYEE
+                    if check_password(attrs.get("password"), PersonalAccount.objects.get(user=user_obj).password)==False:
+                        raise AuthenticationFailed(
+                        self.error_messages['employeeaccountfalse'],
+                            'employeeaccountfalse',)
                 case default:
                     return "something"
                             
+            user_obj.save()
             refresh = RefreshToken.for_user(user_obj)
             refresh['usertype'] = int(attrs.get("usertype"))
             return {

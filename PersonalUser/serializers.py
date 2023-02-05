@@ -43,7 +43,7 @@ class RegisterUserSerializer(serializers.ModelSerializer):
             baseuserserializer = BaseUserRegisterSerializer(context={'site': get_current_site(self.context['request'])})
             user=baseuserserializer.create(validated_data)
         user=BaseUser.objects.filter(email=validated_data['email']).first() if user is None else user
-        user.is_regular=True
+        user.role=BaseUser.CUSTOMER
         user.save()
         personaluser=PersonalAccount.objects.create(user=user,password=make_password(pw))
         return user

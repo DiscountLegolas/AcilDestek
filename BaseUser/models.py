@@ -54,6 +54,16 @@ class BaseUser(AbstractUser):
         regex=r'^(05)\d{9}$',
         message=phone_message
     )
+    CUSTOMER = 1
+    EXPERT = 2
+    EMPLOYEE =3
+      
+    ROLE_CHOICES = (
+        (CUSTOMER, 'CUSTOMER'),
+        (EXPERT, 'Expert'),
+        (EMPLOYEE, 'Employee'),
+    )
+    role = models.PositiveSmallIntegerField(choices=ROLE_CHOICES, blank=True, null=True)
     otp = models.CharField(max_length=6, null=True, blank=True)
     objects = CustomUserManager()
     email = models.EmailField(_('email address'), unique=True)
@@ -86,9 +96,6 @@ class BaseUser(AbstractUser):
     phone = models.CharField(validators=[phone_regex], max_length=60,null=True, blank=True)
     il=models.ForeignKey(İl,on_delete=models.SET_NULL,null=True)
     ilçe=models.ForeignKey(İlçe,on_delete=models.SET_NULL,null=True)
-    is_expert = models.BooleanField(default=False)
-    is_regular = models.BooleanField(default=False)
-    is_employee = models.BooleanField(default=False)
 
     def __str__(self):
         

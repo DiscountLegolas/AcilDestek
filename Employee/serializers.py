@@ -32,7 +32,7 @@ class RegisterEmployeeSerializer(serializers.ModelSerializer):
             baseuserserializer = BaseUserRegisterSerializer(context={'site': get_current_site(self.context['request'])})
             user=baseuserserializer.create(validated_data)
         user=BaseUser.objects.filter(email=validated_data['email']).first() if user is None else user
-        user.is_employee=True
+        user.role=BaseUser.EMPLOYEE
         user.save()
         user.sendactivationmail(get_current_site(self.context['request']))
         employer=Employee.objects.create(user=user,employer=Expert.objects.filter(companyname=validated_data['employer']).first(),password=make_password(pw))

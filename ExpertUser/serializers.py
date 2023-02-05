@@ -121,10 +121,11 @@ class RegisterExpertSerializer(serializers.ModelSerializer):
             baseuserserializer = BaseUserRegisterSerializer(context={'site': get_current_site(self.context['request'])})
             user=baseuserserializer.create(userdict)
         user=BaseUser.objects.filter(email=userdict['email']).first() if user is None else user
-        user.is_expert=True
+        user.role=BaseUser.EXPERT
         expert=Expert.objects.create(user=user,password=make_password(pw),category=ServiceCategory.objects.get(name=cat) if cat is not None else None,**validated_data)
         for openinghour in wh:
             OpeningHours.objects.create(company=Expert.objects.get(user=self.context["request"].user),**openinghour)
+        user.save()
         return expert
 
 
