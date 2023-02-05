@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.exceptions import AuthenticationFailed,NotAcceptable
 from django.contrib import admin
 from django.urls import path,include
 from django.conf.urls.static import static
@@ -70,19 +70,16 @@ class CustomJWTSerializer(TokenObtainPairSerializer):
         if user_obj:
             match int(attrs.get("usertype")):
                 case 1:
-                    user_obj.role=BaseUser.EXPERT
                     if check_password(attrs.get("password"), Expert.objects.get(user=user_obj).password)==False:
                         raise AuthenticationFailed(
                         self.error_messages['expertaccountfalse'],
                             'expertaccountfalse',)
                 case 2:
-                    user_obj.role=BaseUser.CUSTOMER
                     if check_password(attrs.get("password"), PersonalAccount.objects.get(user=user_obj).password)==False:
                         raise AuthenticationFailed(
                         self.error_messages['personalaccountfalse'],
                             'personalaccountfalse',)
                 case 3:
-                    user_obj.role=BaseUser.EMPLOYEE
                     if check_password(attrs.get("password"), PersonalAccount.objects.get(user=user_obj).password)==False:
                         raise AuthenticationFailed(
                         self.error_messages['employeeaccountfalse'],
@@ -90,9 +87,9 @@ class CustomJWTSerializer(TokenObtainPairSerializer):
                 case default:
                     return "something"
                             
-            user_obj.save()
             refresh = RefreshToken.for_user(user_obj)
-            refresh['usertype'] = int(attrs.get("usertype"))
+            user_obj.role= int(attrs.get("usertype"))
+            user_obj.save()
             return {
                 'access': str(refresh.access_token),
                 'refresh': str(refresh),

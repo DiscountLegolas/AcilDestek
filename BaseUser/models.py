@@ -54,8 +54,8 @@ class BaseUser(AbstractUser):
         regex=r'^(05)\d{9}$',
         message=phone_message
     )
-    CUSTOMER = 1
-    EXPERT = 2
+    EXPERT = 1
+    CUSTOMER = 2
     EMPLOYEE =3
       
     ROLE_CHOICES = (
@@ -100,6 +100,23 @@ class BaseUser(AbstractUser):
     def __str__(self):
         
         return  self.email
+
+
+    def expert(self):
+       if(hasattr(self, 'expertprofile')):
+           return self.expertprofile
+       return None
+
+    def customer(self):
+       if(hasattr(self, 'customerprofile')):
+           return self.customerprofile
+       return None
+
+    def employee(self):
+       if(hasattr(self, 'employeeprofile')):
+           return self.employeeprofile
+       return None
+    
     
     class Meta:
         verbose_name        = "BaseUser"

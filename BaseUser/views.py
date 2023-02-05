@@ -5,10 +5,11 @@ from django.core.mail import EmailMessage
 from django.template.loader import render_to_string  
 from django.utils.decorators import method_decorator
 from rest_framework import generics, status, response
+from django.contrib.postgres.search import TrigramSimilarity
 from django.http import HttpResponse  
 from django.utils.http import  urlsafe_base64_decode,urlsafe_base64_encode
 from rest_framework.generics import CreateAPIView,ListAPIView,GenericAPIView
-from BaseUser.serializers import CallExpertSerializer,AccountTypesSerializer,EmailSerializer,ResetPasswordSerializer,ProfileSerializer,OtpEmailSerializer
+from BaseUser.serializers import CallExpertSerializer,AccountTypesSerializer,EmailSerializer,ResetPasswordSerializer,ProfileSerializer,OtpEmailSerializer,GoogleSocialAuthSerializer
 from ExpertUser.serializers import SerializerExpertSimpleInfo,SerializerExpertSimpleInfoF
 from GuestUser.models import GuestUser
 from rest_framework.response import Response
@@ -58,7 +59,7 @@ class AccountTypesView(GenericAPIView):
             return Response(serializer.data)
         else:
             user=BaseUser.objects.filter(email=self.request.GET.get("email")).first()
-            datatoserialize={"emailistaken":emailistaken,"emailisvalid":emailisvalid,"expertprofileexists":user.is_expert,"customerprofileexists":user.is_regular,"employeeprofileexists":user.is_employee}
+            datatoserialize={"emailistaken":emailistaken,"emailisvalid":emailisvalid,"expertprofileexists":bool(user.expert()),"customerprofileexists":bool(user.customer()),"employeeprofileexists":bool(user.employee())}
             serializer = AccountTypesSerializer(datatoserialize)
             return Response(serializer.data)
 
@@ -102,7 +103,7 @@ class SearchAPIView(ListAPIView):
         categories=ServiceCategory.objects.all()
         if cats != '':
             categories=ServiceCategory.objects.filter(name__in=cats)
-        results = Expert.objects.filter(category__in=categories,companyname__icontains=q)
+        results = Expert.objects.annotate(similarity=TrigramSimilarity('companyname',q)).filter(category__in=categories,similarity__gt=0.2).order_by('-similarity')
         return results
 
     @method_decorator(cache_page(60*60*2))
@@ -206,3 +207,19 @@ class ResetPasswordAPI(generics.GenericAPIView):
             {"message": "Password reset complete"},
             status=status.HTTP_200_OK,
         )
+
+
+class GoogleSocialAuthView(GenericAPIView):
+
+    serializer_class = GoogleSocialAuthSerializer
+
+    def post(self, request):
+        """
+        POST with "auth_token"
+        Send an idtoken as from google to get user information
+        """
+
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = ((serializer.validated_data)['auth_token'])
+        return Response(data, status=status.HTTP_200_OK)
