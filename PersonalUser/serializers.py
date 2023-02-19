@@ -37,7 +37,7 @@ class RegisterUserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user=None
         pw=validated_data['password']
-        if BaseUser.objects.filter(email=validated_data['email'],is_regular=True).exists():
+        if BaseUser.objects.filter(email=validated_data['email'],customerprofile__isnull=False).exists():
             raise serializers.ValidationError("An Customer With This Email Already exists you can try to create different account types")
         elif BaseUser.objects.filter(email=validated_data['email']).exists()==False:
             baseuserserializer = BaseUserRegisterSerializer(context={'site': get_current_site(self.context['request'])})

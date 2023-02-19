@@ -27,11 +27,11 @@ WEEKDAYS = [
 
 class Expert(models.Model):
     user = models.OneToOneField(BaseUser, on_delete=models.CASCADE, primary_key=True,related_name="expertprofile")
-    description=models.TextField(verbose_name="Açıklama",null=True)
-    companyname=models.CharField(max_length=50,verbose_name="İşyeri İsmi",null=True)
-    long = models.DecimalField(max_digits=9, decimal_places=6,default=1.0)
-    lat  =  models.DecimalField(max_digits=9, decimal_places=6,default=1.0)
-    category=models.ForeignKey(ServiceCategory,verbose_name="Kategorisi",on_delete=models.SET_NULL,null=True)
+    description=models.TextField(verbose_name="Açıklama",null=True,blank=True)
+    companyname=models.CharField(max_length=50,verbose_name="İşyeri İsmi",null=True,blank=True)
+    long = models.DecimalField(max_digits=9, decimal_places=6,null=True,blank=True)
+    lat  =  models.DecimalField(max_digits=9, decimal_places=6,null=True,blank=True)
+    category=models.ForeignKey(ServiceCategory,verbose_name="Kategorisi",on_delete=models.SET_NULL,null=True,related_name="experts")
     password=models.TextField(verbose_name="Şifre")
 
     @property

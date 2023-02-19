@@ -26,7 +26,7 @@ class RegisterEmployeeSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user=None
         pw=validated_data['password']
-        if BaseUser.objects.filter(email=validated_data['email'],is_employee=True).exists():
+        if BaseUser.objects.filter(email=validated_data['email'],emloyeeprofile__isnull=True).exists():
             serializers.ValidationError("An Employee With This Email Already exists you can try to create different account types")
         elif BaseUser.objects.filter(email=validated_data['email']).exists()==False:
             baseuserserializer = BaseUserRegisterSerializer(context={'site': get_current_site(self.context['request'])})

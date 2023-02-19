@@ -88,19 +88,19 @@ class AccountTypesSerializer(serializers.Serializer):
 
 class BaseUserRegisterSerializer(serializers.ModelSerializer):
 
-    phone = serializers.CharField(required=True)
+    phone = serializers.CharField(required=False)
     email = serializers.EmailField(required=True)
     password = serializers.CharField(write_only=True, required=True)
-    il=serializers.CharField(required=True)
-    ilçe=serializers.CharField(required=True)
+    il=serializers.CharField(required=False)
+    ilçe=serializers.CharField(required=False)
     def create(self, validated_data,):
         passw=validated_data.pop("password",None)
         il=validated_data.pop("il",None)
         ilçe=validated_data.pop("ilçe",None)
         user=BaseUser.objects.create(
             **validated_data,
-            il=İl.objects.get(name=il),
-            ilçe=İlçe.objects.get(name=ilçe)
+            il=İl.objects.get(name=il) if il is not None else None,
+            ilçe=İlçe.objects.get(name=ilçe) if ilçe is not None else None
         )
         user.sendactivationmail(self.context['site'])
         return user
