@@ -22,6 +22,8 @@ class SerializerPersonalUserProfile(serializers.ModelSerializer):
 class RegisterUserSerializer(serializers.ModelSerializer):
 
     email = serializers.EmailField(required=True)
+    long = serializers.DecimalField(max_digits=9, decimal_places=6,required=False)
+    lat  =  serializers.DecimalField(max_digits=9, decimal_places=6,required=False)
     phone = serializers.CharField(required=True)
     password = serializers.CharField(write_only=True, required=True)
     il=serializers.CharField(required=True)
