@@ -72,9 +72,8 @@ class CallExpertSerializer(serializers.Serializer):
 
 class BaseUserSerializer(serializers.ModelSerializer):
 
-    il=serializers.CharField(source="il.name")
-
-    ilçe=serializers.CharField(source="ilçe.name")
+    il=serializers.CharField(source="il.name",default=None) # added default name
+    ilçe=serializers.CharField(source="ilçe.name",default=None)
     class Meta:
         model = BaseUser
         fields= ( "id" , "first_name","last_name","email","phone","il","ilçe")
