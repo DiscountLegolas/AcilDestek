@@ -78,7 +78,7 @@ class Expert(models.Model):
     
 
     def __str__(self):
-        return self.user.email+self.companyname
+        return self.user.email
     
     class Meta:
         verbose_name        = "Expert"

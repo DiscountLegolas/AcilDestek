@@ -97,11 +97,11 @@ class SerializerExpertProfileF(serializers.ModelSerializer):
 class RegisterExpertSerializer(serializers.ModelSerializer):
 
     user=BaseUserRegisterSerializer()
-    description=serializers.CharField(required=True)
-    companyname=serializers.CharField(required=True)
+    description=serializers.CharField(required=False)
+    companyname=serializers.CharField(required=False)
     category = serializers.CharField(required=False)
-    long = serializers.DecimalField(max_digits=9, decimal_places=6)
-    lat  =  serializers.DecimalField(max_digits=9, decimal_places=6)
+    long = serializers.DecimalField(max_digits=9, decimal_places=6,required=False)
+    lat  =  serializers.DecimalField(max_digits=9, decimal_places=6,required=False)
     workinghours = OpeningHoursSerializer(many=True,write_only=False,default=[])
 
     class Meta:
@@ -115,7 +115,7 @@ class RegisterExpertSerializer(serializers.ModelSerializer):
         cat=validated_data.pop("category",None)
         userdict=validated_data.pop("user",None)
         pw=userdict['password']
-        if BaseUser.objects.filter(email=userdict['email'],is_expert=True).exists():
+        if BaseUser.objects.filter(email=userdict['email'],role=1).exists():#give error if expert occurs
             raise serializers.ValidationError("An Expert With This Email Already exists you can try to create different account types")
         elif BaseUser.objects.filter(email=userdict['email']).exists()==False:
             baseuserserializer = BaseUserRegisterSerializer(context={'site': get_current_site(self.context['request'])})

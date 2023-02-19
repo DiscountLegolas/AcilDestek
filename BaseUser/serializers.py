@@ -72,9 +72,8 @@ class CallExpertSerializer(serializers.Serializer):
 
 class BaseUserSerializer(serializers.ModelSerializer):
 
-    il=serializers.CharField(source="il.name")
-
-    ilçe=serializers.CharField(source="ilçe.name")
+    il=serializers.CharField(source="il.name",default=None) # added default name
+    ilçe=serializers.CharField(source="ilçe.name",default=None)
     class Meta:
         model = BaseUser
         fields= ( "id" , "first_name","last_name","email","phone","il","ilçe")
@@ -88,19 +87,19 @@ class AccountTypesSerializer(serializers.Serializer):
 
 class BaseUserRegisterSerializer(serializers.ModelSerializer):
 
-    phone = serializers.CharField(required=True)
+    phone = serializers.CharField(required=False)
     email = serializers.EmailField(required=True)
     password = serializers.CharField(write_only=True, required=True)
-    il=serializers.CharField(required=True)
-    ilçe=serializers.CharField(required=True)
+    il=serializers.CharField(required=False)
+    ilçe=serializers.CharField(required=False)
     def create(self, validated_data,):
         passw=validated_data.pop("password",None)
         il=validated_data.pop("il",None)
         ilçe=validated_data.pop("ilçe",None)
         user=BaseUser.objects.create(
             **validated_data,
-            il=İl.objects.get(name=il),
-            ilçe=İlçe.objects.get(name=ilçe)
+            il= None if il==None else İl.objects.get(name=il),#ternary if done. If expert enters blank,
+            ilçe= None if ilçe==None else İlçe.objects.get(name=ilçe)# the data will be None.
         )
         user.sendactivationmail(self.context['site'])
         return user
