@@ -30,7 +30,7 @@ class RegisterUserSerializer(serializers.ModelSerializer):
     ilçe=serializers.CharField(required=True)
     class Meta:
         model = BaseUser
-        fields = ('id','first_name', 'last_name', 'email','phone', 'password','il','ilçe')
+        fields = ('id','first_name', 'last_name', 'email','phone', 'password','il','ilçe','long','lat')
         extra_kwargs = {
             'first_name': {'required': True},
             'last_name': {'required': True},
