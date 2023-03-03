@@ -80,7 +80,7 @@ class CustomJWTSerializer(TokenObtainPairSerializer):
                         self.error_messages['personalaccountfalse'],
                             'personalaccountfalse',)
                 case 3:
-                    if check_password(attrs.get("password"), PersonalAccount.objects.get(user=user_obj).password)==False:
+                    if check_password(attrs.get("password"), Employee.objects.get(user=user_obj).password)==False:
                         raise AuthenticationFailed(
                         self.error_messages['employeeaccountfalse'],
                             'employeeaccountfalse',)
