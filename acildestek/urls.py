@@ -71,19 +71,13 @@ class CustomJWTSerializer(TokenObtainPairSerializer):
             match int(attrs.get("usertype")):
                 case 1:
                     if check_password(attrs.get("password"), Expert.objects.get(user=user_obj).password)==False:
-                        raise AuthenticationFailed(
-                        self.error_messages['expertaccountfalse'],
-                            'expertaccountfalse',)
+                        raise AuthenticationFailed("e-mail or password invalid for ExpertUser")
                 case 2:
                     if check_password(attrs.get("password"), PersonalAccount.objects.get(user=user_obj).password)==False:
-                        raise AuthenticationFailed(
-                        self.error_messages['personalaccountfalse'],
-                            'personalaccountfalse',)
+                        raise AuthenticationFailed("e-mail or password invalid for PersonalAccount")
                 case 3:
                     if check_password(attrs.get("password"), Employee.objects.get(user=user_obj).password)==False:
-                        raise AuthenticationFailed(
-                        self.error_messages['employeeaccountfalse'],
-                            'employeeaccountfalse',)
+                        raise AuthenticationFailed("e-mail or password invalid for EmployeeAccount")
                 case default:
                     return "something"
                             
@@ -96,9 +90,7 @@ class CustomJWTSerializer(TokenObtainPairSerializer):
                 }
             
         else:
-            raise AuthenticationFailed(
-                self.error_messages['no_active_account'],
-                'no_active_account',)
+            raise AuthenticationFailed("No active account found with the given credentials")
 
 
 
