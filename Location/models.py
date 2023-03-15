@@ -13,7 +13,7 @@ class İl(models.Model):
 
 class İlçe(models.Model):
     name=models.CharField(max_length=15)
-    il = models.ForeignKey(İl, on_delete=models.CASCADE)
+    il = models.ForeignKey(İl, on_delete=models.CASCADE,related_name='ilceler')
 
     def __str__(self):
         return self.name

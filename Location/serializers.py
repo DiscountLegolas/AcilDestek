@@ -5,10 +5,15 @@ from .models import *
 class İlSerializer(serializers.ModelSerializer):
     class Meta:
         model = İl
-        fields=("name")
+        fields=("name",)
 
 class İlçeSerializer(serializers.ModelSerializer):
-    il=İlSerializer()
     class Meta:
         model = İlçe
-        fields=("name","il")
+        fields=("name",)
+
+class IlAndIlceListSerializer(serializers.ModelSerializer):
+    ilceler = İlçeSerializer(many=True)
+    class Meta:
+        model = İl
+        fields = ('name','ilceler')
